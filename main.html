@@ -10,9 +10,58 @@
 </head>
 
 <body>
-	<div class = "container">
+	<div id="logInPopUp" class="modal">
+		<span onclick="document.getElementById('logInPopUp').style.display='none'"
+	  class="close" title="Close Modal">&times;</span>
+	  
+		<!-- Modal Content -->
+		<form class="modal-content animate" action="/action_page.php">
+		  <div class="imgcontainer">
+			<img src="LogInFormImg.png" alt="Avatar" class="avatar">
+		  </div>
+	  
+		  <div class="container">
+			<label for="userName"><b>Username</b></label>
+			<input type="text" placeholder="Enter Username" name="userName" required>
+	  
+			<label for="passWord"><b>Password</b></label>
+			<input type="password" placeholder="Enter Password" name="passWord" required>
+	  
+			<button type="submit">Login</button>
+			<label>
+			  <input type="checkbox" checked="checked" name="remember"> Remember me
+			</label>
+		  </div>
+	  
+		  <div class="container" style="background-color:#f1f1f1">
+			<button type="button" onclick="document.getElementById('logInPopUp').style.display='none'" class="cancelbtn">Cancel</button>
+			<span class="psw">Forgot <a href="#">password?</a></span>
+		  </div>
+		</form>
+	  </div>
+
+	<div class = "container-fluid">
 		<div class = "row">
+			<div class = "col-5">
+			</div>
+			<div class = "col-2">
+				<img class = "img-fluid" src="DevMatchLogo.png">
+			</div>
+			<div class = "col-5">
+			</div>
 		</div>
+		<div class = "row">
+			<div class = "col-4"></div>
+			<div class = "col-3">
+				<button type="button" onclick="document.getElementById('logInPopUp').style.display='block'" class="btn btn-dark">Log-In</button>
+			</div>
+			<div class = "col-1">
+				<button type="button" class="btn btn-dark">Dark</button>
+			</div>
+			<div class = "col-4"></div>
+		</div>
+		<div class = "row"></div>
+		<div class = "row"></div>
 	</div>
 </body>
 
