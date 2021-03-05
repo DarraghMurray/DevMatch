@@ -3,14 +3,19 @@ body {
   
   background: url("../images/background.jpg") no-repeat center center fixed;
   background-size: cover;
-  background-color: lightblue;
   
   }
 
   .container {
-      background-color: lightblue;
+      background-color: lightgray;
   }
 
-  .modal {
 
+
+  .modal-content {
+    border: 1px solid #000;
+    height: 66%;
+    width: 50%; 
+    margin: 5px auto;
+    background-color: lightblue;
   }
