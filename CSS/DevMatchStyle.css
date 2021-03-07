@@ -18,4 +18,9 @@ body {
     width: 50%; 
     margin: 5px auto;
     background-color: lightblue;
+    opacity: 0.5;
+  }
+  
+  .introBtn {
+    text-align: center;
   }
