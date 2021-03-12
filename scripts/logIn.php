@@ -4,7 +4,7 @@
 
     $email    = "";
 
-    $db = mysqli_connect();
+    $db = mysqli_connect("localhost","root","Drombanna1","cs4116Webdb");
 
     if (isset($_POST['email']) && isset($_POST['passWord'])) {
         $email = mysqli_real_escape_string($db, $_POST['email']);
