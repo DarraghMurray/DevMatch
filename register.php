@@ -3,7 +3,7 @@
     
     $email    = "";
 
-    $errors;
+    $errors = array();
 
     $servername='localhost';
     $UserName='root';
@@ -25,7 +25,7 @@
         if (empty($email)) { array_push($errors, "Email is required"); }
         if (empty($password)) { array_push($errors, "Password is required"); }
 
-        $userAlreadyExists= "SELECT * FROM users WHERE Email='$email' LIMIT 1";
+        $userAlreadyExists= "SELECT * FROM users WHERE Email='$email'";
         $result = mysqli_query($connection, $userAlreadyExists);
         $user = mysqli_fetch_assoc($result);
 
@@ -40,11 +40,10 @@
                 VALUES('$email', '$hashPassword', 1)";
           mysqli_query($connection, $query);
 
-          $_SESSION['email'] = $email;
-          $_SESSION['success'] = "You are now logged in";
-          header('location: Home.php');
+          $_SESSION['Registered'] = "You are now registered";
+          header('location: Intro.html');
         } else {
-          echo "Invalid";
+          echo $errors[0];
           header('location: Intro.html');
         }
 }

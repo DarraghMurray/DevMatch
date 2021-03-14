@@ -29,8 +29,6 @@
         $query = "SELECT * FROM users WHERE Email='$email'";
         $result = mysqli_query($connection, $query);
         $user = mysqli_fetch_assoc($result);
-        
-        echo $user['Password'];
 
         if( mysqli_num_rows($result) == 1) {
             if(!password_verify($password, $user['Password'])) {  array_push($errors, "Password is incorrect"); }
@@ -39,12 +37,11 @@
         }
 
         if (count($errors) == 0) {
-                $_SESSION['email'] = $email;
+                $_SESSION['userID'] = $user['UserID'];
                 $_SESSION['success'] = "You are now logged in";
                 echo "success";
         } else {
             echo $errors[0];
-            echo "Failure";
         }
     }
     
