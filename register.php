@@ -6,11 +6,11 @@
     $errors;
 
     $servername='localhost';
-    $username='root';
-    $password='';
+    $UserName='root';
+    $PassWord='';
     $dbName='cs4116webdb';
 
-    $connection= mysqli_connect($servername,$username,$password,$dbName);
+    $connection= mysqli_connect($servername,$UserName,$PassWord,$dbName);
 
     if ($connection->connect_error) {
       die("Connection Failed:" .$connection->connect_error);
@@ -23,13 +23,13 @@
         $password = mysqli_real_escape_string($connection, $_POST['regPass']);
 
         if (empty($email)) { array_push($errors, "Email is required"); }
-        if (empty($password_1)) { array_push($errors, "Password is required"); }
+        if (empty($password)) { array_push($errors, "Password is required"); }
 
-        $userAlreadyExists= "SELECT * FROM users WHERE email='$email' LIMIT 1";
+        $userAlreadyExists= "SELECT * FROM users WHERE Email='$email' LIMIT 1";
         $result = mysqli_query($connection, $userAlreadyExists);
         $user = mysqli_fetch_assoc($result);
 
-        if ($user['email'] === $email) {
+        if ($user['Email'] == $email) {
           array_push($errors, "email already exists");
         }
 
@@ -44,7 +44,8 @@
           $_SESSION['success'] = "You are now logged in";
           header('location: Home.php');
         } else {
-          //header('location: Intro.html');
+          echo "Invalid";
+          header('location: Intro.html');
         }
 }
 ?>

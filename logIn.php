@@ -1,33 +1,50 @@
 <?php 
 
     session_start();
+        
+    $email = "";
 
-    $email    = "";
+    $errors = array();
 
-    $db = mysqli_connect('localhost','root','','cs4116webdb');
+    $servername='localhost';
+    $UserName = 'root';
+    $PassWord='';
+    $dbName='cs4116webdb';
 
-    if (isset($_POST['email']) && isset($_POST['passWord'])) {
-        $email = mysqli_real_escape_string($db, $_POST['email']);
-        $password = mysqli_real_escape_string($db, $_POST['Password']);
+    $connection= mysqli_connect($servername,$UserName,$PassWord,$dbName);
+
+    if ($connection->connect_error) {
+        die("Connection Failed:" .$connection->connect_error);
+    }
+
+    echo "Connected Successfully";
+
+    if (isset($_POST['email']) && isset($_POST['pass'])) {
+        $email = mysqli_real_escape_string($connection, $_POST['email']);
+        $password = mysqli_real_escape_string($connection, $_POST['pass']);
     
-        if (empty($email)) {
-            array_push($errors, "Email is required");
-        }
-        if (empty($password)) {
-            array_push($errors, "Password is required");
-        }
+        if (empty($email)) { array_push($errors, "Email is required"); }
+        if (empty($password)) { array_push($errors, "Password is required");  }
     
+        $query = "SELECT * FROM users WHERE Email='$email'";
+        $result = mysqli_query($connection, $query);
+        $user = mysqli_fetch_assoc($result);
+        
+        echo $user['Password'];
+
+        if( mysqli_num_rows($result) == 1) {
+            if(!password_verify($password, $user['Password'])) {  array_push($errors, "Password is incorrect"); }
+        } else {
+                array_push($errors, "No account with given email");
+        }
+
         if (count($errors) == 0) {
-            $hashPassword = password_hash()
-            $query = "SELECT * FROM users WHERE email='$email' AND password='$hashPassword'";
-            $results = mysqli_query($db, $query);
-            if (mysqli_num_rows($results) == 1) {
                 $_SESSION['email'] = $email;
                 $_SESSION['success'] = "You are now logged in";
-                header('location: Home.html');
-            }else {
-                array_push($errors, "Wrong username/password combination");
-            }
+                echo "success";
+        } else {
+            echo $errors[0];
+            echo "Failure";
         }
     }
     
