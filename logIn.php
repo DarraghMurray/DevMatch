@@ -19,7 +19,7 @@
 
     echo "Connected Successfully";
 
-    if (isset($_POST['email']) && isset($_POST['pass'])) {
+    if (isset($_POST['logIn'])) {
         $email = mysqli_real_escape_string($connection, $_POST['email']);
         $password = mysqli_real_escape_string($connection, $_POST['pass']);
     

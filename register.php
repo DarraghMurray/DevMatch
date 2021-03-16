@@ -18,9 +18,18 @@
 
     echo "Connected Successfully";
 
-    if(isset($_POST['regEmail']) && isset($_POST['regPass'])) {
+    if(isset($_POST['register'])) {
         $email = mysqli_real_escape_string($connection, $_POST['regEmail']);
         $password = mysqli_real_escape_string($connection, $_POST['regPass']);
+        $firstName = mysqli_real_escape_string($connection, $_POST['firstName']);
+        $surName = mysqli_real_escape_string($connection, $_POST['surName']);
+        $gender = mysqli_real_escape_string($connection, $_POST['gender']);
+
+        $oldDate = $_POST['dateOfBirth'];
+        $newDate = strtotime($oldDate);
+        $dateOfBirth = date("Y-m-d", $newDate);
+
+        $country = mysqli_real_escape_string($connection, $_POST['country']);
 
         if (empty($email)) { array_push($errors, "Email is required"); }
         if (empty($password)) { array_push($errors, "Password is required"); }
@@ -37,8 +46,18 @@
 
           $hashPassword = password_hash($password, PASSWORD_DEFAULT);
           $query = "INSERT INTO users (Email, Password, UTypeID) 
-                VALUES('$email', '$hashPassword', 1)";
+                VALUES('$email', '$hashPassword', 1);";
           mysqli_query($connection, $query);
+
+          $userID = mysqli_insert_id($connection);
+          
+          $profileInfoInsert = "INSERT INTO profiles (UserID, FirstName, LastName, Gender, DateOfBirth, Country)
+                                  VALUES('$userID','$firstName','$surName','$gender','$dateOfBirth','$country');";
+          if(mysqli_query($connection, $profileInfoInsert)){
+            echo "Records inserted successfully.";
+        } else{
+            echo "ERROR: Could not able to execute $profileInfoInsert. " . mysqli_error($connection);
+        }
 
           $_SESSION['Registered'] = "You are now registered";
           header('location: Intro.html');
