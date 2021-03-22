@@ -9,6 +9,10 @@
     <body>
       <?php
         include_once("navBar.php");
+
+        if(isset($_REQUEST['search']) ) {
+            
+        }
       ?>
     </body>
 </html>
