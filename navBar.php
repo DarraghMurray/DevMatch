@@ -37,9 +37,9 @@
                     </div>
                     <div class="form-group">
                         <select class="form-control" name="searchType" id="searchType">
-                            <option value=0>connections</option>
-                            <option value=1>teams</option>
-                            <option value=2>vacancies</option>
+                            <option value="0">connections</option>
+                            <option value="1">teams</option>
+                            <option value="2">vacancies</option>
                         </select>
                     </div>
                 </div>

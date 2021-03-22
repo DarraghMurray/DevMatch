@@ -9,9 +9,35 @@
     <body>
       <?php
         include_once("navBar.php");
+        include("database.php");
 
-        if(isset($_REQUEST['search']) ) {
-            
+        if(isset($_REQUEST['search'])) {
+
+            $searchType = intval($_REQUEST['searchType']);
+            $searchTerm = $_REQUEST['searchTerm'];
+
+            if($searchType === 0) {
+               
+            } else if($searchType === 1) {
+                $searchTerm = '%' . $searchTerm . '%';
+                $teamSearch = $connection->prepare('SELECT * FROM teams WHERE Name LIKE ?');
+                $teamSearch->bind_param('s', $searchTerm);
+                $teamSearch->execute();
+
+                $result = $teamSearch->get_result(); 
+                while($row = mysqli_fetch_assoc($result)) {
+                    print_r($row);
+                }
+            } else if($searchType === 2) {
+                $vacancySearch = $connection->prepare('SELECT * FROM vacancies WHERE Role LIKE %{?}%');
+                $vacancySearch->bind_param('s', $searchTerm);
+                $vacancySearch->execute();
+
+                $result = $vacancySearch->get_result();
+                while($row = mysqli_fetch_assoc($result)) {
+                    echo($row);
+                }
+            }
         }
       ?>
     </body>

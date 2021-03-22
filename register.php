@@ -57,25 +57,19 @@
 
             if(count($errors) == 0) {
 
+              $uTypeID = 1;
               $hashPassword = password_hash($password, PASSWORD_DEFAULT);
 
               $userTableInsert = $connection->prepare('INSERT INTO users(Email,Password,UTypeID) 
-                                                      VALUES(:email,:password,:utypeid)');
-              $userTableInsert->bind_param(':email',$email);
-              $userTableInsert->bind_param(':password',$hashPassword);
-              $userTableInsert->bind_param(':utypeid',1);
+                                                      VALUES(?,?,?)');
+              $userTableInsert->bind_param('ssi',$email,$hashPassword,$uTypeID);
               $userTableInsert->execute();
 
               $userID = mysqli_insert_id($connection);
 
               $profileTableInsert = $connection->prepare('INSERT INTO profiles(UserID,FirstName,LastName,Gender,DateOfBirth,Country) 
-                                                      VALUES(:userid,:firstname,:lastname,:gender,:dateofbirth,:country)');
-              $profileTableInsert->bind_param(':userid',$userID);
-              $profileTableInsert->bind_param(':firstname',$firstName);
-              $profileTableInsert->bind_param(':lastname',$surName);
-              $profileTableInsert->bind_param(':gender',$gender);
-              $profileTableInsert->bind_param(':dateofbirth',$dateOfBirth);
-              $profileTableInsert->bind_param(':country',$country);
+                                                      VALUES(?,?,?,?,?,?');
+              $profileTableInsert->bind_param('isssss',$userID,$firstName,$surName,$gender,$dateOfBirth,$country);
               $profileTableInsert->execute();
 
               $_SESSION['Registered'] = "You are now registered";
@@ -94,13 +88,13 @@
           array_push($errors, "date of birth is required");
           return false; 
         }
-        if(!preg_match("/^[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/", $dateOfBirth)) {
+        if(!preg_match("/^[0-9]{2}[\/][0-9]{2}[\/][0-9]{4}$/", $dateOfBirth)) {
           array_push($errors, "date of birth does not match pattern");
           return false;
         }
            
 
-        $splitDOB = implode("/", $dateOfBirth);
+        $splitDOB = explode("/", $dateOfBirth);
         $D = $splitDOB[0];
         $M = $splitDOB[1];
         $Y = $splitDOB[2];
@@ -109,7 +103,7 @@
 
         $currYear = date("Y");
 
-        if($D>0 && $M>0 && $Y>1900 && $D<32 && $M<13 && $Y<=currYear) {
+        if($D>0 && $M>0 && $Y>1900 && $D<32 && $M<13 && $Y<=$currYear) {
 					if($M === 2) {
 						$leapYear = false;
 						if ( (!(yy % 4) && yy % 100) || !(yy % 400)) 
