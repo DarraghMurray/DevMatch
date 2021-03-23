@@ -17,7 +17,15 @@
             $searchTerm = $_REQUEST['searchTerm'];
 
             if($searchType === 0) {
-               
+                $searchTerm = '%' . $searchTerm . '%';
+                $connectionSearch = $connection->prepare('SELECT * FROM profiles WHERE CONCAT(FirstName, " ", LastName) LIKE ?');
+                $connectionSearch->bind_param('s',$searchTerm);
+                $connectionSearch->execute();
+
+                $result = $connectionSearch->get_result();
+                while($row = mysqli_fetch_assoc($result)) {
+                  print_r($row);
+                }
             } else if($searchType === 1) {
                 $searchTerm = '%' . $searchTerm . '%';
                 $teamSearch = $connection->prepare('SELECT * FROM teams WHERE Name LIKE ?');
@@ -29,13 +37,14 @@
                     print_r($row);
                 }
             } else if($searchType === 2) {
+                $searchTerm = '%' . $searchTerm . '%';
                 $vacancySearch = $connection->prepare('SELECT * FROM vacancies WHERE Role LIKE %{?}%');
                 $vacancySearch->bind_param('s', $searchTerm);
                 $vacancySearch->execute();
 
                 $result = $vacancySearch->get_result();
                 while($row = mysqli_fetch_assoc($result)) {
-                    echo($row);
+                    print_r($row);
                 }
             }
         }

@@ -68,7 +68,7 @@
               $userID = mysqli_insert_id($connection);
 
               $profileTableInsert = $connection->prepare('INSERT INTO profiles(UserID,FirstName,LastName,Gender,DateOfBirth,Country) 
-                                                      VALUES(?,?,?,?,?,?');
+                                                      VALUES(?,?,?,?,?,?)');
               $profileTableInsert->bind_param('isssss',$userID,$firstName,$surName,$gender,$dateOfBirth,$country);
               $profileTableInsert->execute();
 
