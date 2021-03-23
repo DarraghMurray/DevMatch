@@ -9,38 +9,43 @@
             require('database.php');
 
             session_start();
-            $email = "";
             $errors = array();
 
-            if (isset($_POST['logIn'])) {
-                $email = mysqli_real_escape_string($connection, $_POST['email']);
-                $password = mysqli_real_escape_string($connection, $_POST['pass']);
+            if (isset($_REQUEST['email'], $_REQUEST['password'])) {
             
-                if (empty($email)) { array_push($errors, "Email is required"); }
-                if (empty($password)) { array_push($errors, "Password is required");  }
+                $email = $_POST['email'];
+                $password = $_POST['password'];
             
-                $emailCheck = $connection->prepare('SELECT * FROM users WHERE Email = ?');
-                $emailCheck->bind_param('s', $email);
-                $emailCheck->execute();
+                if($emailCheck = $connection->prepare('SELECT UserID,Password FROM users WHERE Email = ?')) {
+                    $emailCheck->bind_param('s', $email);
+                    $emailCheck->execute();
 
-                $result = $emailCheck->get_result();
-                $user = mysqli_fetch_assoc($result);
-    
-                if( mysqli_num_rows($result) == 1) {
-                    if(!password_verify($password, $user['Password'])) {  array_push($errors, "Password is incorrect"); }
-                } else {
-                    array_push($errors, "No account with given email");
-                }
+                    $emailCheck->store_result();
+                    $emailCheck->close();
+                    if ($emailCheck->num_rows > 0) {
+                        $emailCheck->bind_result($userID, $Password);
+                        $emailCheck->fetch();
+                        if (password_verify($password, $Password)) {
 
-                if (count($errors) == 0) {
-                        $_SESSION['userID'] = $user['UserID'];
-                        $_SESSION['success'] = "You are now logged in";
-                        echo "success";
-                        header("location: Home.php");
+                            session_regenerate_id();
+                            $_SESSION['loggedin'] = TRUE;
+                            $_SESSION['name'] = $_POST['username'];
+                            $_SESSION['userID'] = $id;
+
+                            header("location: Home.php");
+                        } else {
+                            // Incorrect password
+                            echo 'Incorrect email and/or password!';
+                        }
+                    } else {
+                        // Incorrect email
+                        echo 'Incorrect email and/or password!';
+                    }
                 } else {
-                    echo $errors[0];
-                    header("location: index.html");
+                    echo 'login failed';
                 }
+            } else {
+                exit('Please fill both the username and password fields!');
             }
             
         ?>

@@ -6,7 +6,7 @@
 
     $connection= mysqli_connect($servername,$UserName,$PassWord,$dbName);
 
-    if ($connection->connect_error) {
-      die("Connection Failed:" .$connection->connect_error);
+    if ( mysqli_connect_errno() ) {
+      exit('Failed to connect to MySQL: ' . mysqli_connect_error());
     }
 ?>

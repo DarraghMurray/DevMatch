@@ -75,8 +75,8 @@
               $_SESSION['Registered'] = "You are now registered";
               header('location: index.html');
             } else {
-              echo $errors[0];
-              header('location: index.html');
+              echo($errors[0]);
+              exit("error invalid registration");
             }
     } else {
       header('location: index.html');
