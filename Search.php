@@ -18,11 +18,11 @@
 
             if($searchType === 0) {
                 $searchTerm = '%' . $searchTerm . '%';
-                $connectionSearch = $connection->prepare('SELECT * FROM profiles WHERE CONCAT(FirstName, " ", LastName) LIKE ?');
-                $connectionSearch->bind_param('s',$searchTerm);
-                $connectionSearch->execute();
+                $userSearch = $connection->prepare('SELECT * FROM profiles WHERE CONCAT(FirstName, " ", LastName) LIKE ?');
+                $userSearch->bind_param('s',$searchTerm);
+                $userSearch->execute();
 
-                $result = $connectionSearch->get_result();
+                $result = $userSearch->get_result();
                 while($row = mysqli_fetch_assoc($result)) {
                   print_r($row);
                 }

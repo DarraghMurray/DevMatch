@@ -13,8 +13,8 @@
 
             if (isset($_REQUEST['email'], $_REQUEST['pass'])) {
             
-                $email = $_POST['email'];
-                $password = $_POST['pass'];
+                $email = $_REQUEST['email'];
+                $password = $_REQUEST['pass'];
             
                 if($emailCheck = $connection->prepare('SELECT UserID,Password FROM users WHERE Email = ?')) {
                     $emailCheck->bind_param('s', $email);
@@ -28,25 +28,25 @@
 
                             session_regenerate_id();
                             $_SESSION['loggedin'] = TRUE;
-                            $_SESSION['name'] = $_POST['username'];
-                            $_SESSION['userID'] = $id;
-
+                            $_SESSION['userID'] = $userID;
+            
                             header("location: Home.php");
                         } else {
-                            // Incorrect password
-                            echo 'Incorrect email and/or password!';
+                            array_push($errors, "Incorrect password or email");
                         }
+                        $emailCheck->close();
                     } else {
-                        // Incorrect email
-                        echo 'Incorrect email and/or password!';
+                        array_push($errors, "Incorrect password or email");
                     }
                 } else {
-                    echo 'login failed';
-                }
-                    $emailCheck->close();
-                    
+                    array_push($errors, "log-in failed");
+                }       
             } else {
-                exit('Please fill both the username and password fields!');
+                array_push($errors, "all fields must be filled");
+            }
+
+            if(count($errors) != 0) {
+                header('location: index.html?register=fail&errors=' . $errors[0]);
             }
             
         ?>

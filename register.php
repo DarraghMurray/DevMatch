@@ -4,9 +4,7 @@
     <title>Registration</title>
     <link rel="stylesheet" href="CSS/intro-styles.css"/>
   </head>
-  
   <body>
-
     <?php
         require('database.php');
 
@@ -36,50 +34,61 @@
               $dateOfBirth = date("Y-m-d", $dateOfBirth);
             };
             
-
             $country = $_REQUEST['country'];
             if(empty($country)) { array_push($errors, "must select a country"); }
 
-            
-            if(empty($surName) || strlen($surName) > 50) { array_push($errors, "surname is required"); }
+            if(count($errors) == 0) {
+              if($userAlreadyExists = $connection->prepare('SELECT * FROM users WHERE Email=?')) {
 
+                $userAlreadyExists->bind_param('s', $email);
+                $userAlreadyExists->execute();
 
-            $userAlreadyExists = $connection->prepare('SELECT * FROM users WHERE Email=?');
-            $userAlreadyExists->bind_param('s', $email);
-            $userAlreadyExists->execute();
-
-            $result = $userAlreadyExists->get_result();
-            $user = mysqli_fetch_assoc($result);
-
-            if ($user['Email'] == $email) {
-              array_push($errors, "email already exists");
+                $userAlreadyExists->store_result();
+                    if ($userAlreadyExists->num_rows() > 0) {
+                      array_push($errors, "email already exists");
+                    } else {
+                      echo("email doesn't exist");
+                    }
+              } else {
+                  array_push($errors, "Registration failed");
+              }
+            } else {
+                header('location: index.html?register=fail&errors=' . $errors[0]);
             }
 
             if(count($errors) == 0) {
-
               $uTypeID = 1;
               $hashPassword = password_hash($password, PASSWORD_DEFAULT);
 
-              $userTableInsert = $connection->prepare('INSERT INTO users(Email,Password,UTypeID) 
-                                                      VALUES(?,?,?)');
-              $userTableInsert->bind_param('ssi',$email,$hashPassword,$uTypeID);
-              $userTableInsert->execute();
+              if($userTableInsert = $connection->prepare('INSERT INTO users(Email,Password,UTypeID) 
+                                                      VALUES(?,?,?)')){
+                $userTableInsert->bind_param('ssi',$email,$hashPassword,$uTypeID);
+                $userTableInsert->execute();
 
-              $userID = mysqli_insert_id($connection);
+                $userID = mysqli_insert_id($connection);
+                
 
-              $profileTableInsert = $connection->prepare('INSERT INTO profiles(UserID,FirstName,LastName,Gender,DateOfBirth,Country) 
-                                                      VALUES(?,?,?,?,?,?)');
-              $profileTableInsert->bind_param('isssss',$userID,$firstName,$surName,$gender,$dateOfBirth,$country);
-              $profileTableInsert->execute();
+                if($profileTableInsert = $connection->prepare('INSERT INTO profiles(UserID,FirstName,LastName,Gender,DateOfBirth,Country) 
+                                                        VALUES(?,?,?,?,?,?)')) {
+                  $profileTableInsert->bind_param('isssss',$userID,$firstName,$surName,$gender,$dateOfBirth,$country);
+                  $profileTableInsert->execute();
+                } else {
+                  array_push($errors, "Registration failed");
+                }
+              } else {
+                array_push($errors, "Registration failed");
+              }
 
-              $_SESSION['Registered'] = "You are now registered";
-              header('location: index.html');
+              if(count($errors) == 0){
+                header('location: index.html?register=succeed');
+               } else {
+                  header('location: index.html?register=fail&errors=' . $errors[0]);
+               }
             } else {
-              echo($errors[0]);
-              exit("error invalid registration");
+                header('location: index.html?register=fail&errors=' . $errors[0]);
             }
     } else {
-      header('location: index.html');
+      header('location: index.html?register=fail');
     }
 
       function checkDateValid($dateOfBirth) {
