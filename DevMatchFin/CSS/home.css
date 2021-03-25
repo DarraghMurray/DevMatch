@@ -1,0 +1,37 @@
+.lateral{
+
+    position:absolute;
+    background-color: pink;
+    width:20%;
+    height: 80%;
+    margin-left:2%;
+    margin-top: 2%;
+    
+    }
+    
+    .page{
+    position: absolute;
+    width:75%;
+    height: 80%;
+    left:23%;
+    margin-top: 2%;
+    
+    
+    }
+
+    a{
+        
+        display: block;
+        padding: 10px;
+    }
+
+    a:visited,:active{
+        color:black;
+        text-decoration: none;
+    }
+
+    a:hover{
+        color:gray;
+        text-decoration: none;
+
+    }
