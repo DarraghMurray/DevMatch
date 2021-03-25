@@ -1,0 +1,94 @@
+body {
+    height: 100%;
+  
+  background: url("../images/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+  
+  }
+
+  .container {
+      background-color: lightgray;
+      margin: 0em auto;
+      overflow: hidden;
+  }
+
+  .modal-content {
+    border: 1px solid #000;
+    height: 66%;
+    width: 50%; 
+    margin: 5px auto;
+    background-color: lightblue;
+  }
+  
+  .introBtn {
+    text-align: center;
+  }
+  
+   .title {
+	    height: 90%;
+		margin-bottom: 3em;
+	}
+	
+    .title h2 {
+		text-transform: uppercase;
+		font-size: 2.7em;
+	}
+	
+	.title .byline {
+		font-size: 1.7em;
+		color: #486;
+	}
+
+	#header {
+		position: relative;
+		padding: 3em 0em;
+	}
+	
+  	#menu {
+		position: absolute;
+		top: 2em;
+		right: 0;
+	}
+	
+	#menu ul {
+		display: inline-block;
+	}
+	
+	#menu li {
+		display: block;
+		float: left;
+		text-align: center;
+	}
+	
+	#menu li a, #menu li span {
+		padding: 1em 1.5em;
+		letter-spacing: 1px;
+		text-decoration: none;
+		text-transform: uppercase;
+		font-size: 0.8em;
+		color: #486;
+	}
+	
+	#menu li:hover a, #menu li.active a, #menu li.active span {
+		color: #B79;
+	}
+	
+	#menu .current_page_item a {
+		background: #000;
+		color: #486;
+	}
+	
+	#banner {
+		overflow: hidden;
+		background-size: cover;
+		text-align: center;
+		color: #486;
+	}
+
+	#banner .title {
+		margin-bottom: 1em;
+		text-transform: uppercase;
+	}
+	
+
+	
