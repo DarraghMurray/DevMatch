@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Registration</title>
-    <link rel="stylesheet" href="CSS/intro-styles.css"/>
-  </head>
-  <body>
-    <?php
+<?php
         require('database.php');
 
         session_start();
@@ -46,9 +39,7 @@
                 $userAlreadyExists->store_result();
                     if ($userAlreadyExists->num_rows() > 0) {
                       array_push($errors, "email already exists");
-                    } else {
-                      echo("email doesn't exist");
-                    }
+                    } 
               } else {
                   array_push($errors, "Registration failed");
               }
@@ -176,6 +167,3 @@
        }
       }
     ?>
-
-  </body>
-</html>

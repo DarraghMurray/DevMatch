@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Log-In</title>
-    <link rel="stylesheet" href="CSS/intro-style.css"/>
-  </head>
-  <body>
-        <?php 
+<?php 
             require('database.php');
 
             session_start();
@@ -48,9 +41,4 @@
             if(count($errors) != 0) {
                 header('location: index.html?register=fail&errors=' . $errors[0]);
             }
-            
-        ?>
-
-  </form>
-    </body>
-</html>
+?>
