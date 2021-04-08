@@ -3,7 +3,11 @@
         include_once("navBar.php");
         include("database.php");
 		
-        $user= $_SESSION['userID'];
+        if(isset($_REQUEST['profileSelected'])) {
+          $user = $_REQUEST['profileSelected'];
+        } else {
+           $user= $_SESSION['userID'];
+        }
 	
         $searchTerm =  $user ;
         $connectionSearch = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');

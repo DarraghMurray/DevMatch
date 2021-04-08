@@ -44,7 +44,7 @@
                   array_push($errors, "Registration failed");
               }
             } else {
-                header('location: index.html?register=fail&errors=' . $errors[0]);
+                header('location: index.php?register=fail&errors=' . $errors[0]);
             }
 
             if(count($errors) == 0) {
@@ -71,15 +71,15 @@
               }
 
               if(count($errors) == 0){
-                header('location: index.html?register=succeed');
+                header('location: index.php?register=succeed');
                } else {
-                  header('location: index.html?register=fail&errors=' . $errors[0]);
+                  header('location: index.php?register=fail&errors=' . $errors[0]);
                }
             } else {
-                header('location: index.html?register=fail&errors=' . $errors[0]);
+                header('location: index.php?register=fail&errors=' . $errors[0]);
             }
     } else {
-      header('location: index.html?register=fail');
+      header('location: index.php?register=fail');
     }
 
       function checkDateValid($dateOfBirth) {

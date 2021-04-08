@@ -39,6 +39,6 @@
             }
 
             if(count($errors) != 0) {
-                header('location: index.html?register=fail&errors=' . $errors[0]);
+                header('location: index.php?register=fail&errors=' . $errors[0]);
             }
 ?>

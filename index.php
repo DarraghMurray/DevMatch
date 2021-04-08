@@ -1,10 +1,6 @@
 <html>
-
 	<head>
-		<link rel = "stylesheet"
-			href = "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
-			integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
-			crossorigin="anonymous">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
 		<link rel = "stylesheet"
 			href = "CSS/intro-styles.css">
 		<link rel="preconnect" href="https://fonts.gstatic.com">
@@ -12,7 +8,10 @@
 	</head>
 
 	<body>
-		
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+		<?php
+			include("registerResult.php");
+		?>
 		<div class="background-wrap">
 			<video id="video-bg-elem" preload="auto" autoplay="true" loop="loop" muted="muted"> 
 				<source src="Assets/index.mp4" type="video/mp4">
@@ -24,7 +23,7 @@
 					<form id = "logInPopUp" class="modal-content overflow-auto" action="logIn.php" method="post">
 						<span onclick="document.getElementById('logInPopUp').style.display='none'"
 							class="close" title="Close Modal">&times;</span>
-						<div class="rounded" class="imgcontainer" class="form-group" >
+						<div class="rounded" class="form-group" >
 							<img class="img-fluid" src="Assets/login.png">
 						</div> 
 						<div class="form-group">
@@ -49,7 +48,7 @@
 					<form id = "registerPopUpForm" class="modal-content overflow-auto" onsubmit="return validateForm()" action="register.php" method="POST">
 						<span onclick="document.getElementById('registerPopUp').style.display='none'"
 							class="close" title="Close Modal">&times;</span>
-						<div class="rounded" class="imgcontainer" class="form-group">
+						<div class="rounded" class="form-group">
 							<img class="img-fluid" src="Assets/register.png">
 						</div>
 						<div class="form-group">
@@ -61,8 +60,10 @@
 						</div>
 						<div class="form-group">
 							<input type="password" minlength="6" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" required 
-							class="form-control" name="regPass" placeholder="Password" maxlength="32">
+							class="form-control" id="regPass" name="regPass" placeholder="Password" maxlength="32">
 							<small id="passwordHelp" class="form-text text-muted">passwords require an uppercase letter, a lowercase letter, a number and at least 6 characters</small>
+							<input type="password" minlength="6" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" required
+							class="form-control" id="regPassConfirm" name="regPassConfirm" placeholder="confirm password" maxlength="32">
 						</div>
 						<div class="form-group" style ="display: flex;">
 							<input type="text" required pattern="[^\d]+"class="form-control" name="firstName"  placeholder="First Name"
@@ -376,10 +377,8 @@
 			
 		<script language="javascript">
 
-			console.log("javascript");
-
 			function validateForm() {
-				return validateDate() && isCountrySelected();
+				return confirmPassword() && validateDate() && isCountrySelected();
 			}
 
 			function validateDate() {
@@ -390,10 +389,6 @@
 				let dd = parseInt(dateOfBirthSplit[0]);
 				let mm = parseInt(dateOfBirthSplit[1]);
 				let yy = parseInt(dateOfBirthSplit[2]);
-
-				console.log(dd);
-				console.log(mm);
-				console.log(yy);
 
 				let ListofDays = [31,28,31,30,31,30,31,31,30,31,30,31];
 
@@ -422,7 +417,6 @@
 							alert("exceeded no of days in month");
 							return false;
 						}
-						console.log("true");
 						return true;
 					}
 				} else {
@@ -433,16 +427,24 @@
 
 			function isCountrySelected() {
 				let countryIndex = document.getElementById("country").selectedIndex;
+
 				if(countryIndex >= 1) {
-					console.log("country selected");
 					return true;
-				} else{
-					console.log("false country");
-					alert("no country selected")
-					return false;
 				}
+				alert("no country selected")
+				return false;
+			}
+
+			function confirmPassword() {
+				let password = document.getElementById("regPass");
+				let passwordConfirm = document.getElementById("regPassConfirm");
+
+				if (password.value === passwordConfirm.value) {
+					return true;
+				}
+				alert("passwords don't match");
+				return false;
 			}
 		</script>
 	</body>
-
 </html>

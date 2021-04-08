@@ -14,6 +14,11 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <form action="logOut.php">
+                  <input type="submit">
+              </form>
+            </li>
             <li class="nav-item active">
               <a class="nav-link" href="Home.php">Home <span class="sr-only"></a>
             </li>

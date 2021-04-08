@@ -1,3 +1,15 @@
+<?php
+
+	Session_start();
+	require("database.php");
+	if(isset($_REQUEST['userToAdd'])) {
+		echo "here";
+		$connectionsQuery = $connection->prepare('INSERT INTO connections(User1ID,User2ID,RequestDate) VALUES(?,?,now())');
+		$connectionsQuery->bind_param('ii', $_SESSION['userID'], $_REQUEST['userToAdd']);
+		echo $connectionsQuery->execute();
+	}
+?>
+
 <html>
     <head>
       <link rel = "stylesheet"
@@ -9,8 +21,6 @@
     <body>
       <?php
         include_once("navBar.php");
-        include("database.php");
-
         if(isset($_REQUEST['search'])) {
 
             $searchType = intval($_REQUEST['searchType']);
@@ -90,6 +100,18 @@
 					</td>
 					<td>
 						'.$row['Employment'].'
+					</td>
+					<td>
+						<form action="" method="post">
+							<input type="hidden" name="userToAdd" value=' .$row['UserID']. '>
+							<input type="submit" name="Add" value="Add" />
+						</form>
+					</td>
+					<td>
+						<form action="profile.php" method="post">
+							<input type="hidden" name="profileSelected" value=' .$row['UserID'].'>
+							<input type="submit" name="View" value="View" />
+						</form>
 					</td>
 				</tr>');
 			}
@@ -180,7 +202,6 @@
 		</div>
 		</div>');
 	}
-	
     ?>
     </body>
 </html>

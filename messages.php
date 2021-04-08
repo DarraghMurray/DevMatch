@@ -6,7 +6,7 @@
         $user= $_SESSION['userID'];
 	
         $searchTerm =  $user ;
-        $connectionSearch = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');
+        $connectionSearch = $connection->prepare('SELECT * FROM connections WHERE UserID = ?');
         $connectionSearch->bind_param('s',$searchTerm);
         $connectionSearch->execute();
 
