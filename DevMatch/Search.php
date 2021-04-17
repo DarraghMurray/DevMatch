@@ -1,12 +1,11 @@
 <?php
 
-	Session_start();
+	require("navBar.php");
 	require("database.php");
 	if(isset($_REQUEST['userToAdd'])) {
-		echo "here";
 		$connectionsQuery = $connection->prepare('INSERT INTO connections(User1ID,User2ID,RequestDate) VALUES(?,?,now())');
 		$connectionsQuery->bind_param('ii', $_SESSION['userID'], $_REQUEST['userToAdd']);
-		echo $connectionsQuery->execute();
+		$connectionsQuery->execute();
 	}
 ?>
 
@@ -20,7 +19,6 @@
 
     <body>
       <?php
-        include_once("navBar.php");
         if(isset($_REQUEST['search'])) {
 
             $searchType = intval($_REQUEST['searchType']);

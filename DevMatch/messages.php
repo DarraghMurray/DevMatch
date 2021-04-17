@@ -1,7 +1,6 @@
 <?php
-        session_start();
-        include_once("navBar.php");
-        include("database.php");
+        require("navBar.php");
+        require("database.php");
 		
         $user= $_SESSION['userID'];
 	

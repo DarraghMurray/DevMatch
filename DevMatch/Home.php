@@ -1,3 +1,6 @@
+<?php
+  require("navBar.php");
+?>
 <html>
     <head>
       
@@ -11,9 +14,6 @@
 </head>
 
 <body>
-
-<?php include_once('navBar.php');
-?>   
 
 <div class="lateral">
 

@@ -1,3 +1,7 @@
+<?php
+  require("navBar.php");
+?>
+
 <html>
     <head>
       <link rel = "stylesheet"
@@ -11,13 +15,10 @@
     </head>
 
     <body>
-      <?php
-        include_once("navBar.php");
-
-?>
 
 <div class="lateral">
   <a href="myConnections.php" target="page">Connections</a>
+  <a href="myPendingConnections.php" target="page">Pending</a>
   <a href="myTeams.php"  target="page">Teams</a>
 </div>
 <iframe class="page" name="page" src="myConnections.php"></iframe>

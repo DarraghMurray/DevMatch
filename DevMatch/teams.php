@@ -1,3 +1,4 @@
+
 <html>
     <head>
       <link rel = "stylesheet"
@@ -8,9 +9,7 @@
 
     <body>
       <?php
-        include("database.php");
-
-        
+        require("database.php");
       
                 $teamSearch = $connection->prepare('SELECT * FROM teams ');
                 $teamSearch->execute();
@@ -54,6 +53,12 @@
 					</td>
 					<td>
 						'.$row['Description'].'
+					</td>
+					<td>
+						<form action="teamProfile.php" target="_parent" method="post">
+							<input type="hidden" name="teamProfileSelected" value=' .$row['TeamID'].'>
+                            <input type="submit" name="View" value="View" />
+						</form>
 					</td>
 				</tr>');
 			}
