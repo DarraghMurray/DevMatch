@@ -67,3 +67,24 @@ button#addTeam {
 margin-top: 10px;
 display:block;width:100%;
 }
+
+.lateral{
+
+    position:absolute;
+    background-color: pink;
+    width:20%;
+    height: 80%;
+    margin-left:2%;
+    margin-top: 2%;
+    
+    }
+
+    .page{
+        position: absolute;
+        width:75%;
+        height: 80%;
+        left:23%;
+        margin-top: 2%;
+        
+        
+        }

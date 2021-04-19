@@ -3,6 +3,11 @@
         require("database.php");
         $user = $_SESSION['userID'];
 
+		if(isset($_REQUEST['connectionDeleted'])) {
+            $deleteQuery = $connection->prepare('DELETE FROM connections WHERE (User1ID=? AND User2ID=?) OR (User1ID=? AND user2ID=?)');
+            $deleteQuery->bind_param('iiii', $_REQUEST['connectionDeleted'], $user, $user, $_REQUEST['connectionDeleted']);
+            $deleteQuery->execute();
+        }
 		//retrieves connections already validated
         $connections = $connection->prepare('SELECT User1ID,User2ID FROM connections WHERE (User1ID = ? OR User2ID = ?) AND Validated = "1"');
         $connections->bind_param('ss', $user, $user);
@@ -77,6 +82,13 @@
 								<input type="hidden" name="profileSelected" value=' .$user_row['UserID'].'>
 								<input type="submit" name="View" value="View" />
 							</form>
+						</td>
+						<td>
+							<form action="" method="post">
+								<input type="hidden" name="connectionDeleted" value=' .$user_row['UserID']. '>
+								<input type="submit" name="Delete" value="Delete" />
+							</form>
+						}
 						</td>
 					</tr>' );
 				}

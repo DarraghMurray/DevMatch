@@ -1,8 +1,32 @@
 <?php
 		require("navBar.php");
-        require("database.php");
+		require("database.php");
 
         $teamID = $_REQUEST['teamID'];
+?>
+
+<html>
+    <head>
+      <link rel = "stylesheet"
+			href = "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
+			integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+			crossorigin="anonymous">
+		<link rel="stylesheet" href="CSS/teamProfile.css">
+    </head>
+
+    <body>
+
+	<div class="lateral">
+		<form action="createVacancy.php" method="post">
+			<input type="hidden" name="vacTeamID" value=$teamID>
+			<input type="submit" value="Add Vacancy">
+		</form>
+	</div>
+		
+    </body>
+</html>
+
+<?php
 
 		//retrieves connections already validated
         $vacancies = $connection->prepare('SELECT ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0');
@@ -23,7 +47,8 @@
 	function displaySearchResultVacancy($vacancies) {	 
 
 		echo ('
-		<div class="container">
+		
+		<div class="container page">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h2 class="panel-title">My Connections</h2>
@@ -76,15 +101,4 @@
 
 	?>
     
-    <html>
-    <head>
-      <link rel = "stylesheet"
-			href = "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
-			integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
-			crossorigin="anonymous">
-    </head>
-
-    <body>
-      
-    </body>
-</html>
+   
