@@ -34,13 +34,13 @@
         $description = $row['Description'];
         $creatorID = $row['CreatorID'];
 
-        $creatorSearch = $connection->prepare('SELECT firstName, LastName FROM profiles WHERE UserID = ?');
+        $creatorSearch = $connection->prepare('SELECT FirstName, LastName FROM profiles WHERE UserID = ?');
         $creatorSearch->bind_param('s', $creatorID);
         $creatorSearch->execute();
         $result = $creatorSearch->get_result();
         $row = mysqli_fetch_assoc($result);
 
-        $creatorName = $row['firstName'] . " " . $row['lastName'];
+        $creatorName = $row['FirstName'] . " " . $row['LastName'];
       
       if(isset($_POST['update'])) {
         //update databese validate and reload the page

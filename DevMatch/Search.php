@@ -1,5 +1,4 @@
 <?php
-
 	require("navBar.php");
 	require("database.php");
 	if(isset($_REQUEST['userToAdd'])) {

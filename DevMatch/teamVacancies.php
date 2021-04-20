@@ -2,7 +2,9 @@
 		require("navBar.php");
 		require("database.php");
 
-        $teamID = $_REQUEST['teamID'];
+		if(isset($_REQUEST['teamID'])) {
+        	$teamID = $_REQUEST['teamID'];
+		}
 ?>
 
 <html>
@@ -17,10 +19,12 @@
     <body>
 
 	<div class="lateral">
-		<form action="createVacancy.php" method="post">
-			<input type="hidden" name="vacTeamID" value=$teamID>
-			<input type="submit" value="Add Vacancy">
-		</form>
+		<?php
+			echo('<form action="createVacancy.php" method="post">
+				<input type="hidden" name="vacTeamID" value='. $teamID.'>
+				<input type="submit" value="Add Vacancy">
+			</form>');
+		?>
 	</div>
 		
     </body>

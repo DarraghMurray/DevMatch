@@ -23,6 +23,8 @@
         } else {
            $user= $_SESSION['userID'];
         }
+
+        $userType = intval($_SESSION['userType']);
   
         $searchTerm =  $user ;
 
@@ -94,8 +96,14 @@ echo '
      echo '
           <form method="post">
           <button type="button" id="addTeam" name="addTeam" class="btn btn-primary addTeamBtn">Add a team</button>
-          <form method="post">
-        </div>
+          </form>';
+          if($userType === 2) {
+            echo('<form method="post">
+                <input type="hidden" name="userToBan" value='.$user.'>
+                <input type="submit" name="banUser" value="Ban">
+              </form>');
+          }
+       echo '</div>
 		</div>
 	</div>
 </div>

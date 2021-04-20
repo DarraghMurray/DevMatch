@@ -40,6 +40,6 @@
             }
 
             if(count($errors) != 0) {
-                header('location: index.php?register=fail&errors=' . $errors[0]);
+                header('location: index.php?logIn=fail&error=' . $errors[0]);
             }
 ?>
