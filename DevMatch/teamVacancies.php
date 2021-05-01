@@ -1,10 +1,6 @@
 <?php
 		require("navBar.php");
 		require("database.php");
-
-		if(isset($_REQUEST['teamID'])) {
-        	$teamID = $_REQUEST['teamID'];
-		}
 ?>
 
 <html>
@@ -18,12 +14,20 @@
 
     <body>
 
-	<div class="lateral">
+	<div class="text-right">
 		<?php
-			echo('<form action="createVacancy.php" method="post">
-				<input type="hidden" name="vacTeamID" value='. $teamID.'>
-				<input type="submit" value="Add Vacancy">
-			</form>');
+
+			if(isset($_REQUEST['viewVacancies'])) {
+				$teamID = $_REQUEST['teamID'];
+				$memberType = intval($_REQUEST['memberType']);
+			}
+
+			if($memberType === 2 || $memberType === 3) {
+				echo('<form action="createVacancy.php" method="post">
+					<input type="hidden" name="vacTeamID" value='. $teamID.'>
+					<input type="submit" value="Add Vacancy">
+				</form>');
+			}
 		?>
 	</div>
 		
@@ -33,7 +37,7 @@
 <?php
 
 		//retrieves connections already validated
-        $vacancies = $connection->prepare('SELECT ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0');
+        $vacancies = $connection->prepare('SELECT VacID,ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0');
         $vacancies->bind_param('s', $teamID);
         $vacancies->execute();
 
@@ -52,10 +56,10 @@
 
 		echo ('
 		
-		<div class="container page">
+		<div class="container">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h2 class="panel-title">My Connections</h2>
+					<h2 class="panel-title">Team Vacancies</h2>
 				</div>
 			<table class="table table-bordered table-condensed table-hover">
 			<thead class="thead-dark">
@@ -92,6 +96,12 @@
                         '</td>
 						<td>
 							'.$user_row['FirstName'].' '.$user_row['LastName'].'
+						</td>
+						<td>		
+							<form action="vacancy.php" method="POST">
+								<input type="hidden" name="teamVacancySelected" value='.$row['VacID']. '>
+								<input type="submit" name="View" value="View">
+							</form>
 						</td>
 					</tr>' );
 				}

@@ -10,7 +10,7 @@
       <?php
         include("database.php");
 
-                $connectionSearch = $connection->prepare('SELECT * FROM profiles');
+                $connectionSearch = $connection->prepare('SELECT profiles.* FROM profiles INNER JOIN users ON profiles.UserID=users.UserID WHERE Banned=0');
                 $connectionSearch->execute();
 
                 $result = $connectionSearch->get_result();

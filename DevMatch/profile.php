@@ -18,13 +18,21 @@
     <?php
         require("database.php");
     
+        $userType = intval($_SESSION['userType']);
+
         if(isset($_REQUEST['profileSelected'])) {
           $user = $_REQUEST['profileSelected'];
+          $ownProfile = false;
+        } else if(isset($_REQUEST['userToBan'])) {
+          $user = $_REQUEST['userToBan'];
+          $banQuery = $connection->prepare('UPDATE users SET Banned=1 WHERE UserID=?');
+          $banQuery->bind_param('i', $user);
+          $banQuery->execute();
+          $ownProfile = false;
         } else {
            $user= $_SESSION['userID'];
+           $ownProfile = true;
         }
-
-        $userType = intval($_SESSION['userType']);
   
         $searchTerm =  $user ;
 
@@ -118,25 +126,25 @@ echo '
 			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="form-group">
 					<label for="fullName">Last Name</label>
-					<input type="text" class="form-control" id="lastName" value=' . $lastN .'>
+					<input type="text" class="form-control profileEdit" id="lastName" value=' . $lastN .'>
 				</div>
 			</div>
 			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="form-group">
 					<label for="eMail">Email</label>
-					<input type="email" class="form-control" id="eMail" value='.$mail.'>
+					<input type="email" class="form-control profileEdit" id="eMail" value='.$mail.'>
 				</div>
 			</div>
 			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="form-group">
 					<label for="phone">First name</label>
-					<input type="text" class="form-control" id="firstName" value=' . $firstN .'>
+					<input type="text" class="form-control profileEdit" id="firstName" value=' . $firstN .'>
 				</div>
 			</div>
 			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="form-group">
 					<label for="website">Password</label>
-					<input type="password" class="form-control" id="password" placeholder="Change password">
+					<input type="password" class="form-control profileEdit" id="password" placeholder="Change password">
 				</div>
 			</div>
 		</div>
@@ -147,13 +155,13 @@ echo '
 			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="form-group">
 					<label for="Country">Country</label>
-					<input type="text" class="form-control" id="Country" value='.$country.'>
+					<input type="text" class="form-control profileEdit" id="Country" value='.$country.'>
 				</div>
 			</div>
 			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="form-group">
 					<label for="birthday">Birthday</label>
-					<input type="date" class="form-control" id="birthDay" value='.$birthday.'>
+					<input type="date" class="form-control profileEdit" id="birthDay" value='.$birthday.'>
 				</div>
 			</div>
 		</div>
@@ -180,31 +188,39 @@ echo '
       <label for="birthday">Qualifications</label>
       <input type="text" class="form-control" id="qualification" value="Quallification">
     </div>
-  </div>
-  </div>
-
-		<div class="row gutters">
-			<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-				<div class="text-right">
-        <form method="post">
-					<input type="submit" id="cancelBtn" name="cancel" class="btn btn-secondary" value="Cancel"/>
-					<input type="submit" id="updateBtn" name="update" class="btn btn-primary" value="Update" />
-				</form>
+  </div>';
+    if($ownProfile || $userType === 2) {
+      echo('
+      <div class="row gutters">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+          <div class="text-right">
+          <form method="post">
+            <input type="submit" id="cancelBtn" name="cancel" class="btn btn-secondary" value="Cancel"/>
+            <input type="submit" id="updateBtn" name="update" class="btn btn-primary" value="Update" />
+          </form>
           </div>
-			</div>
-		</div>
-	</div>
+        </div>
+      </div>');
+    }
+	echo '</div>
 </div>
 </div>
 </div>
 </div>
-';?>
+';
+  ?>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-	
-</script>
-
-
+<script type="text/javascript"></script>
+    <script language="javascript">
+        var user_type = '<?php echo $userType ?>';
+        var own_profile = '<?php echo $ownProfile ?>';
+        
+        if(user_type != 2 && own_profile != true) {
+          $(".profileEdit").each(function() {
+            $(this).prop('readonly',true);
+          });
+        }
+    </script>
 </body>
 </html>

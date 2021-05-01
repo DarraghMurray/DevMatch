@@ -112,7 +112,12 @@
             if($searchType === 0) {
 				$searchTerm = '%' . $searchTerm . '%';
 				$searchCountry='%'.$searchCountry.'%';
-                $connectionSearch = $connection->prepare('SELECT * FROM profiles WHERE CONCAT(FirstName, " ", LastName) LIKE ? AND Country LIKE ?');
+                $connectionSearch = $connection->prepare('SELECT profiles.UserID,profiles.FirstName, profiles.LastName, 
+														profiles.Gender, profiles.Country, profiles.Employment FROM profiles 
+														INNER JOIN users ON profiles.UserID=users.UserID WHERE users.Banned=0 
+														AND CONCAT(profiles.FirstName, " ", profiles.LastName) LIKE ? 
+														AND Country LIKE ?');
+				//'SELECT * FROM profiles WHERE CONCAT(FirstName, " ", LastName) LIKE ? AND Country LIKE ?'
                 $connectionSearch->bind_param('ss',$searchTerm,$searchCountry);
                 $connectionSearch->execute();
 

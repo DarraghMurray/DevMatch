@@ -57,7 +57,7 @@
 					$searchTerm = $row['User2ID'];
 				}
 
-				$searchUser = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');
+				$searchUser = $connection->prepare('SELECT profiles.* FROM profiles INNER JOIN users ON profiles.UserID = users.UserID WHERE profiles.UserID = ? AND Banned=0');
 				$searchUser->bind_param('s',$searchTerm);
 				$searchUser->execute();
 

@@ -17,9 +17,34 @@
 
     <?php
         require("database.php");
+
+        $user = $_SESSION['userID'];
+        $userType = intval($_SESSION['userType']);
     
-        if(isset($_REQUEST['teamProfileSelected'])) {
+        if(isset($_REQUEST['update'])) {
+          $team = $_REQUEST['updateTeam'];
+          $updateTeamName = $_REQUEST['updateTeamName'];
+          $updateTeamDescription = $_REQUEST['updateTeamDescription'];
+
+          $updateQuery = $connection->prepare('UPDATE teams SET Name=?, Description=? WHERE TeamID=?');
+          $updateQuery->bind_param('ssi',$updateTeamName,$updateTeamDescription,$team);
+          $updateQuery->execute();
+        }
+        else if(isset($_REQUEST['teamProfileSelected'])) {
           $team = $_REQUEST['teamProfileSelected'];
+        }
+
+        $memTypeQuery = $connection->prepare('SELECT MTypeID FROM members WHERE TeamID=? AND UserID=?');
+        $memTypeQuery->bind_param('ii',$team, $user);
+        $memTypeQuery->execute();
+
+        $memTypeResult = $memTypeQuery->get_result();
+        if(!mysqli_num_rows($memTypeResult)) {
+          $memberType = 0;
+        } else {
+          $memTypeResult = mysqli_fetch_assoc($memTypeResult);
+          $memberType = intval($memTypeResult['MTypeID']);
+        }
   
         $searchTerm =  $team;
 
@@ -70,15 +95,17 @@ echo '
    echo'
         <textarea type="textarea" class="form-control" id="description" placeholder="Description" rows="3"></textarea>';
     else
-     echo ' <textarea type="textarea" class="form-control" id="description" value=' . $description .' rows="3"></textarea>';
+     echo ' <textarea type="textarea" class="form-control" id="description" value="' . $description .'" rows="3"></textarea>';
      echo '
             <form action="teamMembers.php"target="_parent" method="post">
-              <input type="hidden" name="teamID" value=' .$team.'>
-              <input type="submit" name="View" value="View Members" />
+              <input type="hidden" name="memberType" value="'.$memberType.'">
+              <input type="hidden" name="teamID" value="' .$team.'">
+              <input type="submit" name="viewMembers" value="View Members" />
             </form>
             <form action="teamVacancies.php"target="_parent" method="post">
-              <input type="hidden" name="teamID" value=' .$team.'>
-              <input type="submit" name="View" value="View Vacancies" />
+              <input type="hidden" name="memberType" value="'.$memberType.'">
+              <input type="hidden" name="teamID" value="' .$team.'">
+              <input type="submit" name="viewVacancies" value="View Vacancies" />
             </form>
         </div>
 		</div>
@@ -87,40 +114,51 @@ echo '
 </div>
 <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
 <div class="card h-100">
-	<div class="card-body">
-		<div class="row gutters">
-			<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-				<h6 class="mb-2 text-primary">Team Details</h6>
-			</div>
-			<div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12">
-				<div class="form-group">
-					<label for="fullName">Team Name</label>
-					<input type="text" class="form-control" id="teamName" value=' . $name . '>
-				</div>
-			</div>
-			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-				<div class="form-group">
-					<label for="eMail">Team Creator</label>
-					<input type="email" class="form-control" id="teamCreator" value=' . $creatorName . '>
-				</div>
-			</div>
-		</div>
-		<div class="row gutters">
-			<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-				<div class="text-right">
-        <form method="post">
-					<input type="submit" id="cancelBtn" name="cancel" class="btn btn-secondary" value="Cancel"/>
-					<input type="submit" id="updateBtn" name="update" class="btn btn-primary" value="Update" />
-				</form>
+	<div class="card-body">';
+  if($userType===2 || $memberType===2) {
+  echo'
+    <form action="" method="POST">';
+  }
+      echo'<div class="row gutters">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+          <h6 class="mb-2 text-primary">Team Details</h6>
+        </div>
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12">
+          <div class="form-group">
+            <label for="fullName">Team Name</label>
+            <input type="text" class="form-control" name="updateTeamName" id="teamName" value="' . $name . '">
           </div>
-			</div>
-		</div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+          <div class="form-group">
+            <label for="eMail">Team Description</label>
+            <input type="text" class="form-control" name="updateTeamDescription" id="teamDescription" value="' . $description . '">
+          </div>
+        </div>
+      </div>';
+      if($userType === 2 || $memberType === 2) {
+        echo '
+      <div class="row gutters">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+          <div class="text-right">
+            <input type="hidden" name="updateTeam" value="'.$team.'">
+            <input type="submit" id="updateBtn" name="update" class="btn btn-primary" value="Update" />
+    </form>
+            <form action="" method="POST">
+              <input type="hidden" name="teamProfileSelected" value="'.$team.'">
+              <input type="submit" id="cancelBtn" name="cancel" class="btn btn-secondary" value="Cancel"/>
+            </form>
+          </div>
+        </div>
+      </div>';
+      }
+      echo '
 	</div>
 </div>
 </div>
 </div>
 </div>
-';}?>
+';?>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <script type="text/javascript">
