@@ -10,7 +10,7 @@
       <?php
         include("database.php");
 
-                $vacancySearch = $connection->prepare('SELECT * FROM vacancies');
+                $vacancySearch = $connection->prepare('SELECT * FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID');
                 $vacancySearch->execute();
 
                 $result = $vacancySearch->get_result();
@@ -18,47 +18,54 @@
 				displaySearchResultVacancies($result);
          
 	
-		function displaySearchResultVacancies($mysqlResult){	 
-		echo ('
-		<div class="container">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h2 class="panel-title">Vacancies</h2>
-				</div>
-			<table class="table table-bordered table-condensed table-hover">
-			<thead class="thead-dark">
-				<tr>');
-			/*while($finfo=$mysqlResult->fetch_field()){ //We don't want every field
+		function displaySearchResultVacancies($mysqlResult){
+			if (!mysqli_num_rows($mysqlResult)){
 				echo ('
-					<th>'.$finfo->name.'</th>
+				<div class="container">
+					No result found.
+				</div>	
 				');
-			}*/
-				echo('
-					<th>Role</th>
-					<th>Team</th>
-					<th>Description</th>');
-			echo ('
-				</tr>
-			</thead>');
-			while($row = mysqli_fetch_assoc($mysqlResult)) {
-				echo('<tr class="clickableRow" data-href="#">
-					<td>
-						'.$row['Role'].'
-					</td>
-					<td>
-						Not implemented yet
-					</td>
-					<td>
-						'.$row['Description'].'
-					</td>
-				</tr>');
+			} else {	 
+				echo ('
+				<div class="container">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h2 class="panel-title">Results</h2>
+						</div>
+					<table class="table table-bordered table-condensed table-hover">
+					<thead class="thead-dark">
+						<tr>');
+					/*while($finfo=$mysqlResult->fetch_field()){ //We don't want every field
+						echo ('
+							<th>'.$finfo->name.'</th>
+						');
+					}*/
+						echo('
+							<th>Role</th>
+							<th>Team</th>
+							<th>Description</th>');
+					echo ('
+						</tr>
+					</thead>');
+					while($row = mysqli_fetch_assoc($mysqlResult)) {
+						echo('<tr class="clickableRow" data-href="#">
+							<td>
+								'.$row['Role'].'
+							</td>
+							<td>
+								'.$row['Name'].'
+							</td>
+							<td>
+								'.$row['Description'].'
+							</td>
+						</tr>');
+					}
+				echo ('
+				</table>
+				</div>
+				</div>');
 			}
-		echo ('
-		</table>
-		</div>
-		</div>');
-	}
-	
+		}
     ?>
     </body>
 </html>

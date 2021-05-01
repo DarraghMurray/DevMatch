@@ -288,11 +288,6 @@
 					<table class="table table-bordered table-condensed table-hover">
 					<thead class="thead-dark">
 						<tr>');
-					/*while($finfo=$mysqlResult->fetch_field()){ //We don't want every field
-						echo ('
-							<th>'.$finfo->name.'</th>
-						');
-					}*/
 						echo('
 							<th>Role</th>
 							<th>Team</th>
@@ -306,7 +301,7 @@
 								'.$row['Role'].'
 							</td>
 							<td>
-								Not implemented yet
+								'.$row['Name'].'
 							</td>
 							<td>
 								'.$row['Description'].'
