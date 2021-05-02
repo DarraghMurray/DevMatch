@@ -9,10 +9,10 @@
                 $email = $_REQUEST['email'];
                 $password = $_REQUEST['pass'];
             
-                if($emailCheck = $connection->prepare('SELECT UserID,Password,UtypeID,Banned FROM users WHERE Email = ?')) {
-                    $emailCheck->bind_param('s', $email);
-                    $emailCheck->execute();
-
+                $params = array($email);
+                $emailCheck = $db->executeStatement('SELECT UserID,Password,UtypeID,Banned FROM users WHERE Email = ?', 's',$params);
+    
+                if($emailCheck) {
                     $emailCheck->store_result();
                     if ($emailCheck->num_rows() > 0) {
                         $emailCheck->bind_result($userID, $Password, $userType, $Banned);

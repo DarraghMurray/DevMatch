@@ -26,54 +26,37 @@
           $updateTeamName = $_REQUEST['updateTeamName'];
           $updateTeamDescription = $_REQUEST['updateTeamDescription'];
 
-          $updateQuery = $connection->prepare('UPDATE teams SET Name=?, Description=? WHERE TeamID=?');
-          $updateQuery->bind_param('ssi',$updateTeamName,$updateTeamDescription,$team);
-          $updateQuery->execute();
+          $params = array($updateTeamName,$updateTeamDescription,$team);
+          $updateQuery = $db->executeStatement('UPDATE teams SET Name=?, Description=? WHERE TeamID=?','ssi',$params);
         }
         else if(isset($_REQUEST['teamProfileSelected'])) {
           $team = $_REQUEST['teamProfileSelected'];
         }
 
-        $memTypeQuery = $connection->prepare('SELECT MTypeID FROM members WHERE TeamID=? AND UserID=?');
-        $memTypeQuery->bind_param('ii',$team, $user);
-        $memTypeQuery->execute();
+        $params = array($team,$user);
+        $memberTypeQuery = $db->executeStatement('SELECT MTypeID FROM members WHERE TeamID=? AND UserID=?','ii',$params);
 
-        $memTypeResult = $memTypeQuery->get_result();
-        if(!mysqli_num_rows($memTypeResult)) {
-          $memberType = 0;
+        $memberTypeResult = $memberTypeQuery->get_result();
+        if(!mysqli_num_rows($memberTypeResult)) {
+          $_SESSION['memberType'] = 0;
         } else {
-          $memTypeResult = mysqli_fetch_assoc($memTypeResult);
-          $memberType = intval($memTypeResult['MTypeID']);
+          $row = mysqli_fetch_assoc($memTypeResult);
+          $_SESSION['memberType'] = $row['MTypeID'];
         }
-  
+
+        $memberType = intval($_SESSION['memberType']);
         $searchTerm =  $team;
 
-        //mail and password
-        $teamSearch = $connection->prepare('SELECT Name, Description, CreatorID FROM teams WHERE TeamID = ?');
-        $teamSearch->bind_param('s',$searchTerm);
-        $teamSearch->execute();
-        $result = $teamSearch->get_result();
-        $row = mysqli_fetch_assoc($result);
+        $params=array($searchTerm);
+        $teamProfileQuery = $db->executeStatement('SELECT teams.Name,teams.Description,profiles.FirstName,profiles.LastName 
+        FROM teams INNER JOIN profiles ON teams.CreatorID=profiles.UserID 
+        WHERE teams.TeamID=? ','i',$params);
+        $teamProfileResult = $teamProfileQuery->get_result();
+        $row = mysqli_fetch_assoc($teamProfileResult);
         
         $name = $row['Name'];
         $description = $row['Description'];
-        $creatorID = $row['CreatorID'];
-
-        $creatorSearch = $connection->prepare('SELECT FirstName, LastName FROM profiles WHERE UserID = ?');
-        $creatorSearch->bind_param('s', $creatorID);
-        $creatorSearch->execute();
-        $result = $creatorSearch->get_result();
-        $row = mysqli_fetch_assoc($result);
-
         $creatorName = $row['FirstName'] . " " . $row['LastName'];
-      
-      if(isset($_POST['update'])) {
-        //update databese validate and reload the page
-      }
-      if(isset($_POST['cancel'])) {
-         // it will refresh the page automatically
-      }
-
 echo '
 <div class="container">
 <div class="row gutters">

@@ -25,65 +25,39 @@
           $vacancy = $_REQUEST['appliedVacID'];
           $appliedUser = $_REQUEST['appliedUser'];
 
-          $applicantQuery = $connection->prepare('INSERT INTO applications(UserID,VacID) VALUES(?,?)'); 
-          $applicantQuery->bind_param('ii',$appliedUser, $vacancy);
-          $applicantQuery->execute();
+          $params = array($appliedUser,$vacancy);
+          $applicantQuery = $db->executeStatement('INSERT INTO applications(UserID,VacID) VALUES(?,?)','ii',$params);
         }
         else if(isset($_REQUEST['update'])) {
           $vacancy = $_REQUEST['updateVacancy'];
           $updateRole = $_REQUEST['updateRole'];
           $updateDescription = $_REQUEST['updateDescription'];
 
-          $updateQuery = $connection->prepare('UPDATE vacancies SET Role=?, Description=? WHERE VacID=?');
-          $updateQuery->bind_param('ssi',$updateRole,$updateDescription,$vacancy);
-          $updateQuery->execute();
+          $params = array($updateRole,$updateDescription,$vacancy);
+          $updateQuery = $db->executeStatement('UPDATE vacancies SET Role=?, Description=? WHERE VacID=?','ssi',$params);
         }
         else if(isset($_REQUEST['teamVacancySelected'])) {
           $vacancy = $_REQUEST['teamVacancySelected'];
         } 
         else if(isset($_REQUEST['vacToRemove'])) {
             $vacancy = $_REQUEST['vacToRemove'];
-            $banQuery = $connection->prepare('UPDATE vacancies SET Disabled=1 WHERE VacID=?');
-            $banQuery->bind_param('i', $vacancy);
-            $banQuery->execute();
+            $params = array($vacancy);
+            $removeQuery = $db->executeStatement('UPDATE vacancies SET Disabled=1 WHERE VacID=?','i',$params);
         }
   
         $searchTerm =  $vacancy;
 
-        //mail and password
-        $vacancySearch = $connection->prepare('SELECT * FROM vacancies WHERE VacID = ?');
-        $vacancySearch->bind_param('s',$searchTerm);
-        $vacancySearch->execute();
-        $result = $vacancySearch->get_result();
-        $row = mysqli_fetch_assoc($result);
+        $params = array($searchTerm);
+        $vacancySearch = $db->executeStatement('SELECT vacancies.TeamID,vacancies.Role,vacancies.Description, profiles.FirstName, profiles.LastName, teams.Name FROM vacancies INNER JOIN profiles ON vacancies.ManagerID=profiles.UserID 
+        INNER JOIN teams ON vacancies.TeamID=teams.TeamID WHERE VacID=?','i',$params);
+        $vacancyResult = $vacancySearch->get_result();
+        $row = mysqli_fetch_assoc($vacancyResult);
         
         $role = $row['Role'];
         $description = $row['Description'];
-        $managerID = $row['ManagerID'];
-        $teamID = $row['TeamID'];
-
-        $managerSearch = $connection->prepare('SELECT FirstName, LastName FROM profiles WHERE UserID = ?');
-        $managerSearch->bind_param('s', $managerID);
-        $managerSearch->execute();
-        $result = $managerSearch->get_result();
-        $row = mysqli_fetch_assoc($result);
-
         $managerName = $row['FirstName'] . " " . $row['LastName'];
-
-        $teamSearch = $connection->prepare('SELECT * FROM teams WHERE TeamID = ?');
-        $teamSearch->bind_param('s', $teamID);
-        $teamSearch->execute();
-        $result = $teamSearch->get_result();
-        $row = mysqli_fetch_assoc($result);
-
         $teamName = $row['Name'];
-      
-      if(isset($_POST['update'])) {
-        //update databese validate and reload the page
-      }
-      if(isset($_POST['cancel'])) {
-         // it will refresh the page automatically
-      }
+        $teamID = $row['TeamID'];
 
 echo '
 <div class="container">
@@ -177,67 +151,67 @@ echo '
 </div>
 </div>
 ';
-        function displayVacancySkills($vacancy) {
-          include('database.php');
-          $vacancySkillQuery = $connection->prepare('SELECT
-                                                  skills.Name AS skillName,
-                                                  level.Name AS skillLevel,
-                                                  Level.Strength AS skillStrength,
-                                                  skilltype.Name AS skillType
-                                                FROM
-                                                  skillrequirement
-                                                  INNER JOIN skills ON skillrequirement.SkillID = skills.SkillID
-                                                  INNER JOIN level ON skillrequirement.LevelID = level.LevelID
-                                                  INNER JOIN skilltype ON skills.STypeID = skillType.STypeID
-                                                WHERE
-                                                  skillrequirement.VacID = ?');
-          $vacancySkillQuery->bind_param('i', $vacancy);
-          $vacancySkillQuery->execute();
+function displayVacancySkills($vacancy) {
+  include('database.php');
 
-          $result = $vacancySkillQuery->get_result();
+  $params = array($vacancy);
+  $vacancySkillQuery = $db->executeStatement('SELECT
+                              skills.Name AS skillName,
+                              level.Name AS skillLevel,
+                              Level.Strength AS skillStrength,
+                              skilltype.Name AS skillType
+                            FROM
+                              skillrequirement
+                              INNER JOIN skills ON skillrequirement.SkillID = skills.SkillID
+                              INNER JOIN level ON skillrequirement.LevelID = level.LevelID
+                              INNER JOIN skilltype ON skills.STypeID = skillType.STypeID
+                            WHERE
+                              skillrequirement.VacID = ?','i',$params);
+  $result = $vacancySkillQuery->get_result();
 
-          if (!mysqli_num_rows($result)){
-            echo ('
-              No Skill Requirements.
-            ');
-          } else {
-            echo '
-          <div class="container">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h2 class="panel-title">Skills</h2>
-              </div>
-            <table class="table table-bordered table-condensed table-hover">
-            <thead class="thead-dark">
-              <tr>
-                <th>Skill</th>
-                <th>Level</th>
-                <th>Strength</th>
-                <th>Type</th>
-              </tr>
-            </thead>';
-              while($row = mysqli_fetch_assoc($result)) {
+  if (!mysqli_num_rows($result)){
+    echo ('
+      <div class="container">
+        No Skill Requirements.
+      </div>');
+  } else {
+    echo '
+  <div class="container">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title">Skills</h2>
+      </div>
+    <table class="table table-bordered table-condensed table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th>Skill</th>
+        <th>Level</th>
+        <th>Strength</th>
+        <th>Type</th>
+      </tr>
+    </thead>';
+      while($row = mysqli_fetch_assoc($result)) {
 
-                echo('<tr class="clickableRow" data-href="#">
-                  <td>
-                    '.$row['skillName'].'
-                  </td>
-                  <td>
-                    '.$row['skillLevel'].'
-                  </td>
-                  <td>
-                    '.$row['skillStrength'].'
-                  </td>
-                  <td>
-                    '.$row['skillType'].'
-                  </td>
-                </tr>');
-              }
-              echo '</table>
-                    </div>
-                    </div>';
-          }
-        }
+        echo('<tr class="clickableRow" data-href="#">
+          <td>
+            '.$row['skillName'].'
+          </td>
+          <td>
+            '.$row['skillLevel'].'
+          </td>
+          <td>
+            '.$row['skillStrength'].'
+          </td>
+          <td>
+            '.$row['skillType'].'
+          </td>
+        </tr>');
+      }
+      echo '</table>
+            </div>
+            </div>';
+  }
+}
 ?>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>

@@ -4,14 +4,12 @@
         $user = $_SESSION['userID'];
 
 		if(isset($_REQUEST['connectionDeleted'])) {
-            $deleteQuery = $connection->prepare('DELETE FROM connections WHERE (User1ID=? AND User2ID=?) OR (User1ID=? AND user2ID=?)');
-            $deleteQuery->bind_param('iiii', $_REQUEST['connectionDeleted'], $user, $user, $_REQUEST['connectionDeleted']);
-            $deleteQuery->execute();
+            $params = array($_REQUEST['connectionDeleted'],$user,$user,$_REQUEST['connectionDeleted']);
+			$deleteQuery = $db->executeStatement('DELETE FROM connections WHERE (User1ID=? AND User2ID=?) OR (User1ID=? AND user2ID=?)','iiii',$params);
         }
 		//retrieves connections already validated
-        $connections = $connection->prepare('SELECT User1ID,User2ID FROM connections WHERE (User1ID = ? OR User2ID = ?) AND Validated = "1"');
-        $connections->bind_param('ss', $user, $user);
-        $connections->execute();
+        $params = array($user,$user);
+		$connections = $db->executeStatement('SELECT User1ID,User2ID FROM connections WHERE (User1ID = ? OR User2ID = ?) AND Validated = 1','ss',$params);
 
 		$connectionsRes = $connections->get_result();
 
@@ -57,9 +55,8 @@
 					$searchTerm = $row['User2ID'];
 				}
 
-				$searchUser = $connection->prepare('SELECT profiles.* FROM profiles INNER JOIN users ON profiles.UserID = users.UserID WHERE profiles.UserID = ? AND Banned=0');
-				$searchUser->bind_param('s',$searchTerm);
-				$searchUser->execute();
+				$params = array($searchTerm);
+				$searchUser = $db->executeStatement('SELECT profiles.* FROM profiles INNER JOIN users ON profiles.UserID = users.UserID WHERE profiles.UserID = ? AND Banned=0','s',$params);
 
 				$resultUser = $searchUser->get_result();
 

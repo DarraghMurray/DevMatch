@@ -24,24 +24,24 @@
       $vacancy = $_REQUEST['vacAccepted'];
       $teamID = $_REQUEST['teamAccepted'];
 
-      $deleteVacancy = $connection->prepare('DELETE FROM vacancies WHERE VacID=?');
-      $deleteVacancy->bind_param('i',$vacancy);
-      $deleteVacancy->execute();
+      $params = array($vacancy);
+      $deleteVacancy = $db->executeStatement('DELETE FROM vacancies WHERE VacID=?','i',$params);
 
-      $addTeamMember = $connection->prepare('INSERT INTO members VALUES(?,?,1)');
-      $addTeamMember->bind_param('ii',$teamID,$user);
-      $addTeamMember->execute();
+      $params = array($teamID,$user);
+      $addTeamMember = $db->executeStatement('INSERT INTO members VALUES(?,?,1)','ii',$params);
     }
     else if(isset($_REQUEST['viewApplicants'])) {
       $vacancy = $_REQUEST['applicantsVacID'];
       $teamID = $_REQUEST['vacTeamID'];
     }
 
-    $applicantsQuery = $connection->prepare('SELECT profiles.UserID,profiles.FirstName,profiles.LastName,profiles.Gender,profiles.Country,profiles.DateOfBirth FROM applications INNER JOIN profiles ON applications.UserID=profiles.UserID WHERE VacID=?');
-    $applicantsQuery->bind_param('i', $vacancy);
-    $applicantsQuery->execute();
-
+    $params = array($vacancy);
+    $applicantsQuery = $db->executeStatement('SELECT profiles.UserID,profiles.FirstName,profiles.LastName,profiles.Gender,profiles.Country,profiles.DateOfBirth 
+                                              FROM applications INNER JOIN profiles ON applications.UserID=profiles.UserID 
+                                              WHERE VacID=?','i',$params);
     $result = $applicantsQuery->get_result();
+
+
 
     echo' <div class="container">
     <div class="panel panel-default">

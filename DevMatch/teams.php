@@ -11,16 +11,11 @@
       <?php
         require("database.php");
       
-                $teamSearch = $connection->prepare('SELECT * FROM teams ');
-                $teamSearch->execute();
-
-                $result = $teamSearch->get_result(); 
-             
-				displaySearchResultTeam($result);
-          
-        
-		
-	
+		$teamSearch = $db->executeStatement('SELECT * FROM teams');
+		$result = $teamSearch->get_result(); 
+	 
+		displaySearchResultTeam($result);
+  
 	function displaySearchResultTeam($mysqlResult){	 
 		echo ('
 		<div class="container">
@@ -31,11 +26,6 @@
 			<table class="table table-bordered table-condensed table-hover">
 			<thead class="thead-dark">
 				<tr>');
-			/*while($finfo=$mysqlResult->fetch_field()){ //We don't want every field
-				echo ('
-					<th>'.$finfo->name.'</th>
-				');
-			}*/
 				echo('
 					<th>Name</th>
 					<th>Creation date</th>

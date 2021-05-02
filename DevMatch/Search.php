@@ -2,9 +2,8 @@
 	require("navBar.php");
 	require("database.php");
 	if(isset($_REQUEST['userToAdd'])) {
-		$connectionsQuery = $connection->prepare('INSERT INTO connections(User1ID,User2ID,RequestDate) VALUES(?,?,now())');
-		$connectionsQuery->bind_param('ii', $_SESSION['userID'], $_REQUEST['userToAdd']);
-		$connectionsQuery->execute();
+		$params = array($_SESSION['userID'],$_REQUEST['userToAdd'])
+		$connectionsQuery = $db->executeStatement('INSERT INTO connections(User1ID,User2ID,RequestDate) VALUES(?,?,now())','ii',$params);
 	}
 ?>
 
@@ -75,7 +74,7 @@
 							</div>
 							<div class="form-group p-1">
 								<label class="control-label p-1"> Creation date:</label>
-								<input class="form-control" type="date" id="searchCreationDate" name="searchCreationDate">
+								<input class="form-control" type="date" id="searchCreationDate" name="searchCreationDate" placeholde="yyyy-mm-dd">
 								<label class="control-label p-1" for="searchCompareDate"> or </label>
 								<select class="form-control" name="searchCompareDate" id="searchCompareDate">
 									<option value=0 >earlier</option>
@@ -99,6 +98,7 @@
 
 			$searchType = intval($_REQUEST['searchType']);
             $searchTerm = $_REQUEST['searchTerm'];
+
 			if (isset($_REQUEST['searchUserCountry'])){
 				$searchCountry=$_REQUEST['searchUserCountry'];
 			} else {$searchCountry='';}
@@ -112,45 +112,37 @@
             if($searchType === 0) {
 				$searchTerm = '%' . $searchTerm . '%';
 				$searchCountry='%'.$searchCountry.'%';
-                $connectionSearch = $connection->prepare('SELECT profiles.UserID,profiles.FirstName, profiles.LastName, 
-														profiles.Gender, profiles.Country, profiles.Employment FROM profiles 
-														INNER JOIN users ON profiles.UserID=users.UserID WHERE users.Banned=0 
-														AND CONCAT(profiles.FirstName, " ", profiles.LastName) LIKE ? 
-														AND Country LIKE ?');
-				//'SELECT * FROM profiles WHERE CONCAT(FirstName, " ", LastName) LIKE ? AND Country LIKE ?'
-                $connectionSearch->bind_param('ss',$searchTerm,$searchCountry);
-                $connectionSearch->execute();
+
+               /*retrieves all profile data where first and last name concatenated contains searchterm
+				and where country contains searchCountry*/
+				$params = array($searchTerm,$searchCountry);
+				$connectionSearch = $db->executeStatement('SELECT profiles.UserID,profiles.FirstName, profiles.LastName, 
+				profiles.Gender, profiles.Country, profiles.Employment FROM profiles 
+				INNER JOIN users ON profiles.UserID=users.UserID WHERE users.Banned=0 
+				AND CONCAT(profiles.FirstName, " ", profiles.LastName) LIKE ? 
+				AND Country LIKE ?', 'ss',$params);
 
                 $result = $connectionSearch->get_result();
-                /*while($row = mysqli_fetch_assoc($result)) {
-					print_r($row);
-                }*/
 				displaySearchResultProfile($result);
             } else if($searchType === 1) {
 				$searchTerm = '%' . $searchTerm . '%';
+
+				$params=array($searchTerm,$searchCreationDate);
 				if ($searchCompareDate==0){
-					$teamSearch = $connection->prepare('SELECT * FROM teams WHERE Name LIKE ? AND CreationDate <= ?');	//Translation from date in php to datetime in mysql is automatic, they can be compared directly
+					$teamSearch = $db->executeStatement('SELECT * FROM teams WHERE Name LIKE ? AND CreationDate <= ?','ss',$params);	//Translation from date in php to datetime in mysql is automatic, they can be compared directly
 				} else {
-					$teamSearch = $connection->prepare('SELECT * FROM teams WHERE Name LIKE ? AND CreationDate >= ?');
+					$teamSearch = $db->executeStatement('SELECT * FROM teams WHERE Name LIKE ? AND CreationDate >= ?','ss',$params);
 				}
-                $teamSearch->bind_param('ss', $searchTerm, $searchCreationDate);
-                $teamSearch->execute();
 
                 $result = $teamSearch->get_result(); 
-                /* while($row = mysqli_fetch_assoc($result)) {
-                    print_r($row);
-                } */
 				displaySearchResultTeam($result);
             } else if($searchType === 2) {
                 $searchTerm = '%' . $searchTerm . '%';
-                $vacancySearch = $connection->prepare('SELECT * FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID AND Role LIKE ?');
-                $vacancySearch->bind_param('s', $searchTerm);
-                $vacancySearch->execute();
+                
+				$params = array($searchTerm);
+				$vacancySearch= $db->executeStatement('SELECT * FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID AND Role LIKE ?','s',$params);
 
                 $result = $vacancySearch->get_result();
-                /* while($row = mysqli_fetch_assoc($result)) {
-                    print_r($row);
-                } */
 				displaySearchResultVacancies($result);
             }
         }
@@ -174,11 +166,6 @@
 				<table class="table table-bordered table-condensed table-hover">
 				<thead class="thead-dark">
 					<tr>');
-				/*while($finfo=$mysqlResult->fetch_field()){ //We don't want every field
-					echo ('
-						<th>'.$finfo->name.'</th>
-					');
-				}*/
 					echo('
 						<th>Name</th>
 						<th>Gender</th>
@@ -239,11 +226,6 @@
 				<table class="table table-bordered table-condensed table-hover">
 				<thead class="thead-dark">
 					<tr>');
-				/*while($finfo=$mysqlResult->fetch_field()){ //We don't want every field
-					echo ('
-						<th>'.$finfo->name.'</th>
-					');
-				}*/
 					echo('
 						<th>Name</th>
 						<th>Creation date</th>
