@@ -5,14 +5,20 @@
 
         if(isset($_REQUEST['vacTeamID'])) {
             $teamID = $_REQUEST['vacTeamID'];
+			echo("Team set");
         } 
         
         if(isset($_REQUEST['addVacancy'])) {
+			echo("add");
             $role = $_REQUEST['role'];
+			echo($role);
             $description = $_REQUEST['description'];
-            $addManID = $_REQUEST['createVacManID'];
-            $teamID = $_REQUEST['createVacTeamID'];
-
+            echo($description);
+			$addManID = $_REQUEST['createVacManID'];
+            echo($addManID);
+			$teamID = $_REQUEST['createVacTeamID'];
+			echo($teamID);
+			
             $addQuery = $connection->prepare('INSERT INTO vacancies(TeamID,ManagerID,Role,Description) VALUES(?,?,?,?)');
             $addQuery->bind_param('iiss',$teamID, $addManID, $role, $description);
             $addQuery->execute();

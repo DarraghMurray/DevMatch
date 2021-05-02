@@ -46,7 +46,7 @@
         $mail =   $row["Email"];
 
        //profile data
-        $connectionSearch = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');
+        $connectionSearch = $connection->prepare('SELECT * FROM profiles WHERE profiles.UserID = ?');
         $connectionSearch->bind_param('s',$searchTerm);
         $connectionSearch->execute();
 
@@ -71,7 +71,27 @@
         else
          $imageURL = "Assets/other.png";
 
-            
+        /* // Skills
+		$connectionSearch = $connection->prepare('SELECT 
+													level.Name AS LvlName, 
+													skills.Name AS SName, 
+													userskill.Qualification AS SQualification,
+													skilltype.Name AS STName 
+													FROM level, userskill, skills, skilltype, profiles 
+													WHERE profiles.UserID = ? 
+													AND userskill.UserID=profiles.UserID 
+													AND userskill.SkillID=skills.SkillID 
+													AND userskill.LevelID=level.LevelID
+													AND skills.STypeID=skilltype.STypeID');
+        $connectionSearch->bind_param('s',$searchTerm);
+        $connectionSearch->execute();
+		$result = $connectionSearch->get_result();
+        $skillList=array();
+		while($row = mysqli_fetch_assoc($result)){
+			array_push($skillList,$row);
+		} */
+		
+		
       if(isset($_POST['update'])) {
         //update databese validate and reload the page
       }
@@ -98,13 +118,14 @@ echo '
 
    if($description==null)
    echo'
-        <textarea type="textarea" class="form-control" id="description" placeholder="Description" rows="3"></textarea>';
+        <textarea type="textarea" class="form-control profileEdit" id="description" placeholder="Description" rows="3"></textarea>';
     else
-     echo ' <textarea type="textarea" class="form-control" id="description" value=' . $description .' rows="3"></textarea>';
+     echo ' <textarea type="textarea" class="form-control profileEdit" id="description" value=' . $description .' rows="3"></textarea>';
      echo '
           <form method="post">
           <button type="button" id="addTeam" name="addTeam" class="btn btn-primary addTeamBtn">Add a team</button>
-          </form>';
+           <button type="button" id="viewAdministratedTeams" name="viewAdministratedTeams" class="btn btn-primary viewAdministratedTeams" style="margin-top:10px">View Administrated Teams</button>
+		  </form>';
           if($userType === 2) {
             echo('<form method="post">
                 <input type="hidden" name="userToBan" value='.$user.'>
@@ -155,42 +176,396 @@ echo '
 			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="form-group">
 					<label for="Country">Country</label>
-					<input type="text" class="form-control profileEdit" id="Country" value='.$country.'>
-				</div>
+					<select class="form-control profileEdit" id="Country" name="countryField" selected='.$country.'>
+                <option value='.$country.' selected>'.$country.'</option>
+                <option value="Afghanistan">Afghanistan</option>
+								<option value="Aland Islands">Aland Islands</option>
+								<option value="Albania">Albania</option>
+								<option value="Algeria">Algeria</option>
+								<option value="American Samoa">American Samoa</option>
+								<option value="Andorra">Andorra</option>
+								<option value="Angola">Angola</option>
+								<option value="Anguilla">Anguilla</option>
+								<option value="Antarctica">Antarctica</option>
+								<option value="Antigua and Barbuda">Antigua and Barbuda</option>
+								<option value="Argentina">Argentina</option>
+								<option value="Armenia">Armenia</option>
+								<option value="Aruba">Aruba</option>
+								<option value="Australia">Australia</option>
+								<option value="Austria">Austria</option>
+								<option value="Azerbaijan">Azerbaijan</option>
+								<option value="Bahamas">Bahamas</option>
+								<option value="Bahrain">Bahrain</option>
+								<option value="Bangladesh">Bangladesh</option>
+								<option value="Barbados">Barbados</option>
+								<option value="Belarus">Belarus</option>
+								<option value="Belgium">Belgium</option>
+								<option value="Belize">Belize</option>
+								<option value="Benin">Benin</option>
+								<option value="Bermuda">Bermuda</option>
+								<option value="Bhutan">Bhutan</option>
+								<option value="Bolivia">Bolivia</option>
+								<option value="Bonaire, Sint Eustatius and Saba">Bonaire, Sint Eustatius and Saba</option>
+								<option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+								<option value="Botswana">Botswana</option>
+								<option value="Bouvet Island">Bouvet Island</option>
+								<option value="Brazil">Brazil</option>
+								<option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
+								<option value="Brunei Darussalam">Brunei Darussalam</option>
+								<option value="Bulgaria">Bulgaria</option>
+								<option value="Burkina Faso">Burkina Faso</option>
+								<option value="Burundi">Burundi</option>
+								<option value="Cambodia">Cambodia</option>
+								<option value="Cameroon">Cameroon</option>
+								<option value="Canada">Canada</option>
+								<option value="Cape Verde">Cape Verde</option>
+								<option value="Cayman Islands">Cayman Islands</option>
+								<option value="Central African Republic">Central African Republic</option>
+								<option value="Chad">Chad</option>
+								<option value="Chile">Chile</option>
+								<option value="China">China</option>
+								<option value="Christmas Island">Christmas Island</option>
+								<option value="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option>
+								<option value="Colombia">Colombia</option>
+								<option value="Comoros">Comoros</option>
+								<option value="Congo">Congo</option>
+								<option value="Congo, the Democratic Republic of the">Congo, the Democratic Republic of the</option>
+								<option value="Cook Islands">Cook Islands</option>
+								<option value="Costa Rica">Costa Rica</option>
+								<option value="Cote DIvoire">Cote DIvoire</option>
+								<option value="Croatia">Croatia</option>
+								<option value="Cuba">Cuba</option>
+								<option value="Curacao">Curacao</option>
+								<option value="Cyprus">Cyprus</option>
+								<option value="Czech Republic">Czech Republic</option>
+								<option value="Denmark">Denmark</option>
+								<option value="Djibouti">Djibouti</option>
+								<option value="Dominica">Dominica</option>
+								<option value="Dominican Republic">Dominican Republic</option>
+								<option value="Ecuador">Ecuador</option>
+								<option value="Egypt">Egypt</option>
+								<option value="El Salvador">El Salvador</option>
+								<option value="Equatorial Guinea">Equatorial Guinea</option>
+								<option value="Eritrea">Eritrea</option>
+								<option value="Estonia">Estonia</option>
+								<option value="Ethiopia">Ethiopia</option>
+								<option value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option>
+								<option value="Faroe Islands">Faroe Islands</option>
+								<option value="Fiji">Fiji</option>
+								<option value="Finland">Finland</option>
+								<option value="France">France</option>
+								<option value="French Guiana">French Guiana</option>
+								<option value="French Polynesia">French Polynesia</option>
+								<option value="French Southern Territories">French Southern Territories</option>
+								<option value="Gabon">Gabon</option>
+								<option value="Gambia">Gambia</option>
+								<option value="Georgia">Georgia</option>
+								<option value="Germany">Germany</option>
+								<option value="Ghana">Ghana</option>
+								<option value="Gibraltar">Gibraltar</option>
+								<option value="Greece">Greece</option>
+								<option value="Greenland">Greenland</option>
+								<option value="Grenada">Grenada</option>
+								<option value="Guadeloupe">Guadeloupe</option>
+								<option value="Guam">Guam</option>
+								<option value="Guatemala">Guatemala</option>
+								<option value="Guernsey">Guernsey</option>
+								<option value="Guinea">Guinea</option>
+								<option value="Guinea-Bissau">Guinea-Bissau</option>
+								<option value="Guyana">Guyana</option>
+								<option value="Haiti">Haiti</option>
+								<option value="Heard Island and Mcdonald Islands">Heard Island and Mcdonald Islands</option>
+								<option value="Holy See (Vatican City State)">Holy See (Vatican City State)</option>
+								<option value="Honduras">Honduras</option>
+								<option value="Hong Kong">Hong Kong</option>
+								<option value="Hungary">Hungary</option>
+								<option value="Iceland">Iceland</option>
+								<option value="India">India</option>
+								<option value="Indonesia">Indonesia</option>
+								<option value="Iran, Islamic Republic of">Iran, Islamic Republic of</option>
+								<option value="Iraq">Iraq</option>
+								<option value="Ireland">Ireland</option>
+								<option value="Isle of Man">Isle of Man</option>
+								<option value="Israel">Israel</option>
+								<option value="Italy">Italy</option>
+								<option value="Jamaica">Jamaica</option>
+								<option value="Japan">Japan</option>
+								<option value="Jersey">Jersey</option>
+								<option value="Jordan">Jordan</option>
+								<option value="Kazakhstan">Kazakhstan</option>
+								<option value="Kenya">Kenya</option>
+								<option value="Kiribati">Kiribati</option>
+								<option value="Korea, Democratic People"s Republic of">Korea, Democratic People"s Republic of</option>
+								<option value="Korea, Republic of">Korea, Republic of</option>
+								<option value="Kosovo">Kosovo</option>
+								<option value="Kuwait">Kuwait</option>
+								<option value="Kyrgyzstan">Kyrgyzstan</option>
+								<option value="Lao Peoples Democratic Republic">Lao Peoples Democratic Republic</option>
+								<option value="Latvia">Latvia</option>
+								<option value="Lebanon">Lebanon</option>
+								<option value="Lesotho">Lesotho</option>
+								<option value="Liberia">Liberia</option>
+								<option value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
+								<option value="Liechtenstein">Liechtenstein</option>
+								<option value="Lithuania">Lithuania</option>
+								<option value="Luxembourg">Luxembourg</option>
+								<option value="Macao">Macao</option>
+								<option value="Macedonia">Macedonia, the Former Yugoslav Republic of</option>
+								<option value="Madagascar">Madagascar</option>
+								<option value="Malawi">Malawi</option>
+								<option value="Malaysia">Malaysia</option>
+								<option value="Maldives">Maldives</option>
+								<option value="Mali">Mali</option>
+								<option value="Malta">Malta</option>
+								<option value="Marshall Islands">Marshall Islands</option>
+								<option value="Martinique">Martinique</option>
+								<option value="Mauritania">Mauritania</option>
+								<option value="Mauritius">Mauritius</option>
+								<option value="Mayotte">Mayotte</option>
+								<option value="Mexico">Mexico</option>
+								<option value="Micronesia, Federated States of">Micronesia, Federated States of</option>
+								<option value="Moldova, Republic of">Moldova, Republic of</option>
+								<option value="Monaco">Monaco</option>
+								<option value="Mongolia">Mongolia</option>
+								<option value="Montenegro">Montenegro</option>
+								<option value="Montserrat">Montserrat</option>
+								<option value="Morocco">Morocco</option>
+								<option value="Mozambique">Mozambique</option>
+								<option value="Myanmar">Myanmar</option>
+								<option value="Namibia">Namibia</option>
+								<option value="Nauru">Nauru</option>
+								<option value="Nepal">Nepal</option>
+								<option value="Netherlands">Netherlands</option>
+								<option value="Netherlands Antilles">Netherlands Antilles</option>
+								<option value="New Caledonia">New Caledonia</option>
+								<option value="New Zealand">New Zealand</option>
+								<option value="Nicaragua">Nicaragua</option>
+								<option value="Niger">Niger</option>
+								<option value="Nigeria">Nigeria</option>
+								<option value="Niue">Niue</option>
+								<option value="Norfolk Island">Norfolk Island</option>
+								<option value="Northern Mariana Islands">Northern Mariana Islands</option>
+								<option value="Norway">Norway</option>
+								<option value="Oman">Oman</option>
+								<option value="Pakistan">Pakistan</option>
+								<option value="Palau">Palau</option>
+								<option value="Palestinian Territory, Occupied">Palestinian Territory, Occupied</option>
+								<option value="Panama">Panama</option>
+								<option value="Papua New Guinea">Papua New Guinea</option>
+								<option value="Paraguay">Paraguay</option>
+								<option value="Peru">Peru</option>
+								<option value="Philippines">Philippines</option>
+								<option value="Pitcairn">Pitcairn</option>
+								<option value="Poland">Poland</option>
+								<option value="Portugal">Portugal</option>
+								<option value="Puerto Rico">Puerto Rico</option>
+								<option value="Qatar">Qatar</option>
+								<option value="Reunion">Reunion</option>
+								<option value="Romania">Romania</option>
+								<option value="Russian Federation">Russian Federation</option>
+								<option value="Rwanda">Rwanda</option>
+								<option value="Saint Barthelemy">Saint Barthelemy</option>
+								<option value="Saint Helena">Saint Helena</option>
+								<option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+								<option value="Saint Lucia">Saint Lucia</option>
+								<option value="Saint Martin">Saint Martin</option>
+								<option value="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
+								<option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
+								<option value="Samoa">Samoa</option>
+								<option value="San Marino">San Marino</option>
+								<option value="Sao Tome and Principe">Sao Tome and Principe</option>
+								<option value="Saudi Arabia">Saudi Arabia</option>
+								<option value="Senegal">Senegal</option>
+								<option value="Serbia">Serbia</option>
+								<option value="Serbia and Montenegro">Serbia and Montenegro</option>
+								<option value="Seychelles">Seychelles</option>
+								<option value="Sierra Leone">Sierra Leone</option>
+								<option value="Singapore">Singapore</option>
+								<option value="Sint Maarten">Sint Maarten</option>
+								<option value="Slovakia">Slovakia</option>
+								<option value="Slovenia">Slovenia</option>
+								<option value="Solomon Islands">Solomon Islands</option>
+								<option value="Somalia">Somalia</option>
+								<option value="South Africa">South Africa</option>
+								<option value="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands</option>
+								<option value="South Sudan">South Sudan</option>
+								<option value="Spain">Spain</option>
+								<option value="Sri Lanka">Sri Lanka</option>
+								<option value="Sudan">Sudan</option>
+								<option value="Suriname">Suriname</option>
+								<option value="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
+								<option value="Swaziland">Swaziland</option>
+								<option value="Sweden">Sweden</option>
+								<option value="Switzerland">Switzerland</option>
+								<option value="Syrian Arab Republic">Syrian Arab Republic</option>
+								<option value="Taiwan, Province of China">Taiwan, Province of China</option>
+								<option value="Tajikistan">Tajikistan</option>
+								<option value="Tanzania, United Republic of">Tanzania, United Republic of</option>
+								<option value="Thailand">Thailand</option>
+								<option value="Timor-Leste">Timor-Leste</option>
+								<option value="Togo">Togo</option>
+								<option value="Tokelau">Tokelau</option>
+								<option value="Tonga">Tonga</option>
+								<option value="Trinidad and Tobago">Trinidad and Tobago</option>
+								<option value="Tunisia">Tunisia</option>
+								<option value="Turkey">Turkey</option>
+								<option value="Turkmenistan">Turkmenistan</option>
+								<option value="Turks and Caicos Islands">Turks and Caicos Islands</option>
+								<option value="Tuvalu">Tuvalu</option>
+								<option value="Uganda">Uganda</option>
+								<option value="Ukraine">Ukraine</option>
+								<option value="United Arab Emirates">United Arab Emirates</option>
+								<option value="United Kingdom">United Kingdom</option>
+								<option value="United States">United States</option>
+								<option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
+								<option value="Uruguay">Uruguay</option>
+								<option value="Uzbekistan">Uzbekistan</option>
+								<option value="Vanuatu">Vanuatu</option>
+								<option value="Venezuela">Venezuela</option>
+								<option value="Viet Nam">Viet Nam</option>
+								<option value="Virgin Islands, British">Virgin Islands, British</option>
+								<option value="Virgin Islands, U.s.">Virgin Islands, U.s.</option>
+								<option value="Wallis and Futuna">Wallis and Futuna</option>
+								<option value="Western Sahara">Western Sahara</option>
+								<option value="Yemen">Yemen</option>
+								<option value="Zambia">Zambia</option>
+								<option value="Zimbabwe">Zimbabwe</option>
+							</select>
+          </div>
 			</div>
 			<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="form-group">
 					<label for="birthday">Birthday</label>
-					<input type="date" class="form-control profileEdit" id="birthDay" value='.$birthday.'>
+					<input type="date" class="form-control profileEdit" id="birthDay" name="bDay" value='.$birthday.'>
 				</div>
 			</div>
 		</div>
-
-    <div class="row gutters">
+	<div class="row gutters">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
       <h6 class="mt-3 mb-2 text-primary">Skills</h6>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-      <div class="form-group">
-        <label for="SkillName">Skill</label>
-        <input type="text" class="form-control" id="Skill" value="Skill">
-      </div>
-    </div>
-    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-      <div class="form-group">
-        <label for="level">Level</label>
-        <input type="text" class="form-control" id="level" value="Level">
-      </div>
-    </div>
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+    <div class="form-group">';
+	
+	/* foreach($skillList as $userskill){
+    echo'<div class="row gutters">
+		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+			<h6 class="mt-3 mb-2 text-primary">Skills</h6>
+		</div>
+		<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+			<div class="form-group">
+				<label for="SkillName">Skill</label>
+				<input type="text" class="form-control" id="Skill" value="'.$userskill['SName'].'">
+			</div>
+		</div>
+		
+		<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+			<div class="form-group">
+				<label for="level">Level</label>
+				<input type="text" class="form-control" id="level" value="'.$userskill['LvlName'].'">
+			</div>
+		</div>
 
-    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-    <div class="form-group">
-      <label for="birthday">Qualifications</label>
-      <input type="text" class="form-control" id="qualification" value="Quallification">
+		<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+			<div class="form-group">
+				<label for="qualification">Qualifications</label>
+				<input type="text" class="form-control" id="qualification" value="'.$userskill['SQualification'].'">
+			</div>
+		</div>';
+	} */
+	//////////////////////////////// skills	  
+		//existing skills
+		$searchUserSkill = $connection->prepare('SELECT * FROM userskill WHERE UserID = ?');
+		$searchUserSkill->bind_param('s',$user);
+		$searchUserSkill->execute();
+	
+		$resultUserSkill = $searchUserSkill->get_result();
+		$existingSkills = array();
+	
+		while(	$userSkills_row = mysqli_fetch_assoc($resultUserSkill)){
+			array_push($existingSkills,$userSkills_row['SkillID']);
+		}
+
+   $searchSkills= $connection->prepare('SELECT * FROM skills');
+   $searchSkills->execute();
+   $resultSkills = $searchSkills->get_result();
+
+   $count=0;
+
+   while(	$skills_row = mysqli_fetch_assoc($resultSkills)){
+
+	//Qualifications of a job
+	$searchDescription = $connection->prepare('SELECT * FROM skilltype WHERE STypeID = ?');
+	$searchDescription->bind_param('s',$skills_row['STypeID']);
+	$searchDescription->execute();
+	$resultDescription = $searchDescription->get_result();
+	$rowDesc = mysqli_fetch_assoc($resultDescription);
+
+	echo ' <div class="d-flex justify-content-between" style="margin-top:10px;">';
+
+	if (in_array($skills_row['SkillID'], $existingSkills)) {
+
+    echo '
+	<input type="checkbox" class="profileEdit" name="skill[]" value='.$skills_row['SkillID'].' checked>
+    <label for='.$skills_row['SkillID'].'>'.$skills_row['Name'].'</label><br>';
+	}else{
+	echo '	<input type="checkbox" class="profileEdit" name="skill[]" value='.$skills_row["SkillID"].'>
+    <label for='.$skills_row['SkillID'].'>'.$skills_row['Name'].'</label><br>';
+		
+	}
+
+	$getLevelVar = getLevel($skills_row['SkillID'],$user);
+
+
+	$search = $connection->prepare('SELECT * FROM level');
+    $search->execute();
+    
+    $resultLevel = $search->get_result();
+    
+	$lev_name= "level".$skills_row['SkillID'];
+	echo '<select class="profileEdit" name="'.$lev_name.'">';
+	while($level_row = mysqli_fetch_assoc($resultLevel)){
+		if ($getLevelVar == $level_row["LevelID"])
+		echo '<option value='.$level_row["LevelID"].' selected>'.$level_row["Name"].' </option>';
+	else
+		echo '<option value='.$level_row["LevelID"].' >'.$level_row["Name"].' </option>';
+
+    }
+
+    echo '
+    </select>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal'.$count.'">See qualifications</button>
+
+    <!-- Modal -->
+  <div class="modal fade" id="myModal'.$count.'" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">'.$rowDesc['Name'].'</h4>
+        </div>
+        <div class="modal-body">
+          <p>'.$rowDesc['Description'].'</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
     </div>
-  </div>';
+  </div>
+    
+    </div>';
+	$count++;
+  }
+
     if($ownProfile || $userType === 2) {
       echo('
+		</div>
+		</div>
+		</div>
       <div class="row gutters">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
           <div class="text-right">
@@ -208,6 +583,232 @@ echo '
 </div>
 </div>
 ';
+
+if(isset($_POST['update'])) {
+
+
+
+  //update database validate and reload the page
+  if(isset($_POST['descrip'])){
+    $dd= $_POST['descrip'];
+    $descriptionQ = $connection->prepare('UPDATE profiles SET Description = ? WHERE UserID= ?');
+    $descriptionQ->bind_param('si', $dd, $user);
+    $descriptionQ->execute();
+  }
+
+  if(isset($_POST['lastName'])){
+    $dd= $_POST['lastName'];
+    if(checkName($dd)){
+    $descriptionQ = $connection->prepare('UPDATE profiles SET LastName = ? WHERE UserID= ?');
+    $descriptionQ->bind_param('si', $dd, $user);
+    $descriptionQ->execute();
+    }
+  }
+
+  if(isset($_POST['firstName'])){
+    $dd= $_POST['firstName'];
+    if(checkName($dd)){
+    $descriptionQ = $connection->prepare('UPDATE profiles SET FirstName = ? WHERE UserID= ?');
+    $descriptionQ->bind_param('si', $dd, $user);
+    $descriptionQ->execute();
+    }
+  }
+ 
+  
+ 
+  if(isset($_POST['countryField'])){
+    $dd= $_POST['countryField'];
+    $descriptionQ = $connection->prepare('UPDATE profiles SET Country = ? WHERE UserID= ?');
+    $descriptionQ->bind_param('si', $dd, $user);
+    $descriptionQ->execute();
+  }
+ 
+  if(isset($_POST['bDay'])){
+    $dd= $_POST['bDay'];
+    $descriptionQ = $connection->prepare('UPDATE profiles SET DateOfBirth = ? WHERE UserID= ?');
+    $descriptionQ->bind_param('si', $dd, $user);
+    $descriptionQ->execute();
+  }
+
+  
+  
+  if(isset($_POST['eMail'])){
+    $dd= $_POST['eMail'];
+    if(checkEmail($dd,$user)){
+    $descriptionQ = $connection->prepare('UPDATE users SET Email = ? WHERE UserID= ?');
+    $descriptionQ->bind_param('si', $dd, $user);
+    $descriptionQ->execute();
+    }
+  }
+
+
+  if(isset($_POST['passWord'])){
+      $dd= $_POST['passWord'];
+      if(checkPassword($dd)){
+      $hashPassword = password_hash($dd, PASSWORD_DEFAULT);
+      $descriptionQ = $connection->prepare('UPDATE users SET Password = ? WHERE UserID= ?');
+      $descriptionQ->bind_param('si', $hashPassword, $user);
+      $descriptionQ->execute();
+      echo '<script> alert("Password updated!")</script>';
+      }
+  }
+
+
+
+
+  if(!empty($_POST['skill'])){
+	// Loop to store and display values of individual checked checkbox.
+
+	$searchUserSkill = $connection->prepare('SELECT * FROM userskill WHERE UserID = ?');
+	$searchUserSkill->bind_param('s',$user);
+	$searchUserSkill->execute();
+
+	$resultUserSkill = $searchUserSkill->get_result();
+	$existingSkills = array();
+
+	$newSkills = array();
+
+	while(	$userSkills_row = mysqli_fetch_assoc($resultUserSkill)){
+		array_push($existingSkills,$userSkills_row['SkillID']);
+	}
+
+
+
+	///I must compare with the new elements
+	// 1. daca exista  in existing avem new - update level
+	// 2. daca in existing nu am new - il adaug
+	// 3. daca in new nu am existing - il sterg si resetez nivel
+
+
+	foreach($_POST['skill'] as $selected){ //checked items
+		array_push($newSkills,$selected);
+		if(!in_array($selected,$existingSkills)){ //insert in db with level
+			$lev= "level".$selected;
+			if(isset($_POST[$lev])){
+
+				$ins = $connection->prepare('INSERT INTO userskill VALUES ( ? , ? , ? , NULL)');
+				$ins->bind_param('iii',$user,$selected,$_POST[$lev]);
+				$ins->execute();
+			}	
+		}
+	}
+
+	foreach($existingSkills as $selected){
+		if(in_array($selected,$newSkills)){
+			//update level
+			$lev= "level".$selected;
+			if(isset($_POST[$lev])){
+
+				$upd = $connection->prepare('UPDATE userskill SET LevelID = ? WHERE UserID= ? and SkillID= ?');
+				$upd->bind_param('sss',$_POST[$lev], $user,$selected);
+				$upd->execute();
+			}
+		}
+		else{
+			//selected from existing does not exist in new - delete
+			$del = $connection->prepare('DELETE FROM userskill WHERE UserID= ? and SkillID= ?');
+				$del->bind_param('ss',$user,$selected);
+				$del->execute();
+		}
+	}
+
+
+}
+	
+
+
+//refreshing the entire content to see live data
+
+ echo "<meta http-equiv='refresh' content='0'>";
+
+ 
+}
+if(isset($_POST['cancel'])) {
+   // it will refresh the page automatically
+   echo "<meta http-equiv='refresh' content='0'>";
+
+}
+
+
+
+
+function checkName($name) {
+  if(empty($name)) { 
+    echo '<script> alert("full name is required");</script>';
+    return false;
+ }
+ if(strlen($name) > 50) {
+  echo '<script> alert("first or last name exceeds character limit 50");</script>';
+  return false;
+
+ }
+ if(preg_match('/[0-9]+/', $name) > 0) {
+  echo '<script> alert("first or last name contains a number");</script>';
+  return false;
+
+ }
+ return true;
+}
+
+function checkEmail($email,$user) {
+      require("database.php");
+      $search = $connection->prepare('SELECT * FROM users WHERE Email = ? AND UserID != ?');
+      $search->bind_param('ss',$email,$user);
+      $search ->execute();
+      $search->store_result();
+    
+  if ($search->num_rows() > 0) {
+    echo '<script> alert("Email already exists");</script>';
+    return false;
+  } 
+
+  if(empty($email)) { 
+    echo '<script> alert("Email is required");</script>';
+    return false;
+  }
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { 
+   echo '<script> alert( "Invalid email");</script>';
+   return false;
+  }
+  
+  return true;
+}
+
+function checkPassword($password) {
+  if($password==null)
+    return false;
+  else{
+    if(!preg_match("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/", $password)) {
+      echo '<script> alert( "password does not match pattern")</script>';
+      return false;
+    }
+  }
+
+  if(strlen($password) > 32) {
+    echo '<script> alert("password exceeds max length 32")</script>';
+    return false;
+  }
+
+return true;
+}
+
+
+function getLevel($skillId,$user){
+	require("database.php");
+
+	$searchUserSkill = $connection->prepare('SELECT * FROM userskill WHERE UserID = ? AND SkillID= ?');
+	$searchUserSkill->bind_param('ss',$user,$skillId);
+	$searchUserSkill->execute();
+	$resultUserSkill = $searchUserSkill->get_result();
+	
+	$userSkillsLevel_row = mysqli_fetch_assoc($resultUserSkill);
+
+	if($userSkillsLevel_row == null){
+		return 1;}
+	else{
+		return $userSkillsLevel_row["LevelID"];
+	}
+}
   ?>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
@@ -219,6 +820,7 @@ echo '
         if(user_type != 2 && own_profile != true) {
           $(".profileEdit").each(function() {
             $(this).prop('readonly',true);
+			$(this).prop('disabled',true);
           });
         }
     </script>
