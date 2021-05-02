@@ -40,7 +40,7 @@
         if(!mysqli_num_rows($memberTypeResult)) {
           $_SESSION['memberType'] = 0;
         } else {
-          $row = mysqli_fetch_assoc($memTypeResult);
+          $row = mysqli_fetch_assoc($memberTypeResult);
           $_SESSION['memberType'] = $row['MTypeID'];
         }
 

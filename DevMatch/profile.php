@@ -21,7 +21,6 @@
         $userType = intval($_SESSION['userType']);
 
         if(isset($_REQUEST['profileSelected'])) {
-					echo 'post******************************************************';
           $user = $_REQUEST['profileSelected'];
           $ownProfile = false;
         } else if(isset($_REQUEST['userToBan'])) {
@@ -63,7 +62,7 @@
         else
          $imageURL = "Assets/other.png";
 		
-<<<<<<< Updated upstream
+/* <<<<<<< Updated upstream
 		
 	if(isset($_POST['update'])) {
 
@@ -549,7 +548,7 @@ echo '
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="form-group">';
 	
-=======
+======= */
 		if(isset($_POST['update'])) {
 
 
@@ -1025,33 +1024,7 @@ echo '
 			   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 			   <div class="form-group">';
 			   
-			   /* foreach($skillList as $userskill){
-			   echo'<div class="row gutters">
-				   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-					   <h6 class="mt-3 mb-2 text-primary">Skills</h6>
-				   </div>
-				   <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-					   <div class="form-group">
-						   <label for="SkillName">Skill</label>
-						   <input type="text" class="form-control" id="Skill" value="'.$userskill['SName'].'">
-					   </div>
-				   </div>
-				   
-				   <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-					   <div class="form-group">
-						   <label for="level">Level</label>
-						   <input type="text" class="form-control" id="level" value="'.$userskill['LvlName'].'">
-					   </div>
-				   </div>
-		   
-				   <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-					   <div class="form-group">
-						   <label for="qualification">Qualifications</label>
-						   <input type="text" class="form-control" id="qualification" value="'.$userskill['SQualification'].'">
-					   </div>
-				   </div>';
-			   } */
->>>>>>> Stashed changes
+/* >>>>>>> Stashed changes */
 	//////////////////////////////// skills	  
 		//existing skills
 		$params = array($user);
@@ -1157,13 +1130,6 @@ echo '
 </div>
 </form>
 ';
-
-<<<<<<< Updated upstream
-=======
-
-
-
->>>>>>> Stashed changes
 
 function checkName($name) {
   if(empty($name)) { 
