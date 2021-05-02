@@ -21,6 +21,7 @@
         $userType = intval($_SESSION['userType']);
 
         if(isset($_REQUEST['profileSelected'])) {
+					echo 'post******************************************************';
           $user = $_REQUEST['profileSelected'];
           $ownProfile = false;
         } else if(isset($_REQUEST['userToBan'])) {
@@ -92,14 +93,148 @@
 		} */
 		
 		
-      if(isset($_POST['update'])) {
+	if(isset($_POST['update'])) {
         //update databese validate and reload the page
-      }
-      if(isset($_POST['cancel'])) {
-         // it will refresh the page automatically
-      }
+		
+		echo 'post******************************************************';
+
+
+		//update database validate and reload the page
+		if(isset($_POST['descrip'])){
+			$dd= $_POST['descrip'];
+				$descriptionQ = $connection->prepare('UPDATE profiles SET Description = ? WHERE UserID= ?');
+				$descriptionQ->bind_param('si', $dd, $user);
+				$descriptionQ->execute();
+		}
+
+		if(isset($_POST['lastName'])){
+			$dd= $_POST['lastName'];
+			if(checkName($dd)){
+				$descriptionQ = $connection->prepare('UPDATE profiles SET LastName = ? WHERE UserID= ?');
+				$descriptionQ->bind_param('si', $dd, $user);
+				$descriptionQ->execute();
+			}
+		}
+
+		if(isset($_POST['firstName'])){
+			$dd= $_POST['firstName'];
+			if(checkName($dd)){
+				$descriptionQ = $connection->prepare('UPDATE profiles SET FirstName = ? WHERE UserID= ?');
+				$descriptionQ->bind_param('si', $dd, $user);
+				$descriptionQ->execute();
+			}
+		}
+	 
+	  
+	 
+		if(isset($_POST['countryField'])){
+			$dd= $_POST['countryField'];
+			$descriptionQ = $connection->prepare('UPDATE profiles SET Country = ? WHERE UserID= ?');
+			$descriptionQ->bind_param('si', $dd, $user);
+			$descriptionQ->execute();
+		}
+	 
+		if(isset($_POST['bDay'])){
+			$dd= $_POST['bDay'];
+			$descriptionQ = $connection->prepare('UPDATE profiles SET DateOfBirth = ? WHERE UserID= ?');
+			$descriptionQ->bind_param('si', $dd, $user);
+			$descriptionQ->execute();
+		}
+
+	  
+	  
+		if(isset($_POST['eMail'])){
+			$dd= $_POST['eMail'];
+			if(checkEmail($dd,$user)){
+				$descriptionQ = $connection->prepare('UPDATE users SET Email = ? WHERE UserID= ?');
+				$descriptionQ->bind_param('si', $dd, $user);
+				$descriptionQ->execute();
+			}
+		}
+
+
+		if(isset($_POST['passWord'])){
+			$dd= $_POST['passWord'];
+			if(checkPassword($dd)){
+				$hashPassword = password_hash($dd, PASSWORD_DEFAULT);
+				$descriptionQ = $connection->prepare('UPDATE users SET Password = ? WHERE UserID= ?');
+				$descriptionQ->bind_param('si', $hashPassword, $user);
+				$descriptionQ->execute();
+				echo '<script> alert("Password updated!")</script>';
+			}
+		}
+
+
+
+
+		if(!empty($_POST['skill'])){
+			// Loop to store and display values of individual checked checkbox.
+
+			$searchUserSkill = $connection->prepare('SELECT * FROM userskill WHERE UserID = ?');
+			$searchUserSkill->bind_param('s',$user);
+			$searchUserSkill->execute();
+
+			$resultUserSkill = $searchUserSkill->get_result();
+			$existingSkills = array();
+
+			$newSkills = array();
+
+			while(	$userSkills_row = mysqli_fetch_assoc($resultUserSkill)){
+				array_push($existingSkills,$userSkills_row['SkillID']);
+			}
+
+
+
+			///I must compare with the new elements
+			// 1. daca exista  in existing avem new - update level
+			// 2. daca in existing nu am new - il adaug
+			// 3. daca in new nu am existing - il sterg si resetez nivel
+
+
+			foreach($_POST['skill'] as $selected){ //checked items
+				array_push($newSkills,$selected);
+				if(!in_array($selected,$existingSkills)){ //insert in db with level
+					$lev= "level".$selected;
+					if(isset($_POST[$lev])){
+
+						$ins = $connection->prepare('INSERT INTO userskill VALUES ( ? , ? , ? , NULL)');
+						$ins->bind_param('iii',$user,$selected,$_POST[$lev]);
+						$ins->execute();
+					}	
+				}
+			}
+
+			foreach($existingSkills as $selected){
+				if(in_array($selected,$newSkills)){
+					//update level
+					$lev= "level".$selected;
+					if(isset($_POST[$lev])){
+
+						$upd = $connection->prepare('UPDATE userskill SET LevelID = ? WHERE UserID= ? and SkillID= ?');
+						$upd->bind_param('sss',$_POST[$lev], $user,$selected);
+						$upd->execute();
+					}
+				}
+				else{
+					//selected from existing does not exist in new - delete
+					$del = $connection->prepare('DELETE FROM userskill WHERE UserID= ? and SkillID= ?');
+						$del->bind_param('ss',$user,$selected);
+						$del->execute();
+				}
+			}
+		}
+	
+		//refreshing the entire content to see live data
+		echo "<meta http-equiv='refresh' content='0'>";
+	}	
+	
+	if(isset($_POST['cancel'])) {
+	   // it will refresh the page automatically
+	   echo "<meta http-equiv='refresh' content='0'>";
+	}
 
 echo '
+<form method=post>
 <div class="container">
 <div class="row gutters">
 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
@@ -122,10 +257,9 @@ echo '
     else
      echo ' <textarea type="textarea" class="form-control profileEdit" id="description" value=' . $description .' rows="3"></textarea>';
      echo '
-          <form method="post">
           <button type="button" id="addTeam" name="addTeam" class="btn btn-primary addTeamBtn">Add a team</button>
            <button type="button" id="viewAdministratedTeams" name="viewAdministratedTeams" class="btn btn-primary viewAdministratedTeams" style="margin-top:10px">View Administrated Teams</button>
-		  </form>';
+		  ';
           if($userType === 2) {
             echo('<form method="post">
                 <input type="hidden" name="userToBan" value='.$user.'>
@@ -582,154 +716,8 @@ echo '
 </div>
 </div>
 </div>
+</form>
 ';
-
-if(isset($_POST['update'])) {
-
-
-
-  //update database validate and reload the page
-  if(isset($_POST['descrip'])){
-    $dd= $_POST['descrip'];
-    $descriptionQ = $connection->prepare('UPDATE profiles SET Description = ? WHERE UserID= ?');
-    $descriptionQ->bind_param('si', $dd, $user);
-    $descriptionQ->execute();
-  }
-
-  if(isset($_POST['lastName'])){
-    $dd= $_POST['lastName'];
-    if(checkName($dd)){
-    $descriptionQ = $connection->prepare('UPDATE profiles SET LastName = ? WHERE UserID= ?');
-    $descriptionQ->bind_param('si', $dd, $user);
-    $descriptionQ->execute();
-    }
-  }
-
-  if(isset($_POST['firstName'])){
-    $dd= $_POST['firstName'];
-    if(checkName($dd)){
-    $descriptionQ = $connection->prepare('UPDATE profiles SET FirstName = ? WHERE UserID= ?');
-    $descriptionQ->bind_param('si', $dd, $user);
-    $descriptionQ->execute();
-    }
-  }
- 
-  
- 
-  if(isset($_POST['countryField'])){
-    $dd= $_POST['countryField'];
-    $descriptionQ = $connection->prepare('UPDATE profiles SET Country = ? WHERE UserID= ?');
-    $descriptionQ->bind_param('si', $dd, $user);
-    $descriptionQ->execute();
-  }
- 
-  if(isset($_POST['bDay'])){
-    $dd= $_POST['bDay'];
-    $descriptionQ = $connection->prepare('UPDATE profiles SET DateOfBirth = ? WHERE UserID= ?');
-    $descriptionQ->bind_param('si', $dd, $user);
-    $descriptionQ->execute();
-  }
-
-  
-  
-  if(isset($_POST['eMail'])){
-    $dd= $_POST['eMail'];
-    if(checkEmail($dd,$user)){
-    $descriptionQ = $connection->prepare('UPDATE users SET Email = ? WHERE UserID= ?');
-    $descriptionQ->bind_param('si', $dd, $user);
-    $descriptionQ->execute();
-    }
-  }
-
-
-  if(isset($_POST['passWord'])){
-      $dd= $_POST['passWord'];
-      if(checkPassword($dd)){
-      $hashPassword = password_hash($dd, PASSWORD_DEFAULT);
-      $descriptionQ = $connection->prepare('UPDATE users SET Password = ? WHERE UserID= ?');
-      $descriptionQ->bind_param('si', $hashPassword, $user);
-      $descriptionQ->execute();
-      echo '<script> alert("Password updated!")</script>';
-      }
-  }
-
-
-
-
-  if(!empty($_POST['skill'])){
-	// Loop to store and display values of individual checked checkbox.
-
-	$searchUserSkill = $connection->prepare('SELECT * FROM userskill WHERE UserID = ?');
-	$searchUserSkill->bind_param('s',$user);
-	$searchUserSkill->execute();
-
-	$resultUserSkill = $searchUserSkill->get_result();
-	$existingSkills = array();
-
-	$newSkills = array();
-
-	while(	$userSkills_row = mysqli_fetch_assoc($resultUserSkill)){
-		array_push($existingSkills,$userSkills_row['SkillID']);
-	}
-
-
-
-	///I must compare with the new elements
-	// 1. daca exista  in existing avem new - update level
-	// 2. daca in existing nu am new - il adaug
-	// 3. daca in new nu am existing - il sterg si resetez nivel
-
-
-	foreach($_POST['skill'] as $selected){ //checked items
-		array_push($newSkills,$selected);
-		if(!in_array($selected,$existingSkills)){ //insert in db with level
-			$lev= "level".$selected;
-			if(isset($_POST[$lev])){
-
-				$ins = $connection->prepare('INSERT INTO userskill VALUES ( ? , ? , ? , NULL)');
-				$ins->bind_param('iii',$user,$selected,$_POST[$lev]);
-				$ins->execute();
-			}	
-		}
-	}
-
-	foreach($existingSkills as $selected){
-		if(in_array($selected,$newSkills)){
-			//update level
-			$lev= "level".$selected;
-			if(isset($_POST[$lev])){
-
-				$upd = $connection->prepare('UPDATE userskill SET LevelID = ? WHERE UserID= ? and SkillID= ?');
-				$upd->bind_param('sss',$_POST[$lev], $user,$selected);
-				$upd->execute();
-			}
-		}
-		else{
-			//selected from existing does not exist in new - delete
-			$del = $connection->prepare('DELETE FROM userskill WHERE UserID= ? and SkillID= ?');
-				$del->bind_param('ss',$user,$selected);
-				$del->execute();
-		}
-	}
-
-
-}
-	
-
-
-//refreshing the entire content to see live data
-
- echo "<meta http-equiv='refresh' content='0'>";
-
- 
-}
-if(isset($_POST['cancel'])) {
-   // it will refresh the page automatically
-   echo "<meta http-equiv='refresh' content='0'>";
-
-}
-
-
 
 
 function checkName($name) {

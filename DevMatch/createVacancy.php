@@ -5,7 +5,6 @@
 
         if(isset($_REQUEST['vacTeamID'])) {
             $teamID = $_REQUEST['vacTeamID'];
-			echo("Team set");
         } 
         
         if(isset($_REQUEST['addVacancy'])) {
@@ -23,6 +22,19 @@
             $addQuery->bind_param('iiss',$teamID, $addManID, $role, $description);
             $addQuery->execute();
         }
+		
+		foreach($_POST['skill'] as $selected){ //checked items
+		array_push($newSkills,$selected);
+		if(!in_array($selected,$existingSkills)){ //insert in db with level
+			$lev= "level".$selected;
+			if(isset($_POST[$lev])){
+
+				$ins = $connection->prepare('INSERT INTO skillrequirement VALUES ( ? , ? , ?)');
+				$ins->bind_param('iii',$vacancy,$selected,$_POST[$lev]);
+				$ins->execute();
+			}	
+		}
+	}
 ?>
 
 <html>
@@ -62,9 +74,47 @@
                                     <input type="text" class="form-control" id="description" name="description" required maxlength="20000">
                                 </div>
                             </div>
+							
+							
+							<div class="row gutters">
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+									<h6 class="mt-3 mb-2 text-primary">Skills</h6>
+								</div>
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+									<div class="form-group">
+							<?php 
+									//	
+									$searchSkills= $connection->prepare('SELECT * FROM skills');
+									$searchSkills->execute();
+									$resultSkills = $searchSkills->get_result();
+									
+									while(	$skills_row = mysqli_fetch_assoc($resultSkills)){
+
+										echo '
+											<div class="d-flex justify-content-between" style="margin-top:10px;">
+												<input type="checkbox" class="profileEdit" name="skill[]" value='.$skills_row['SkillID'].'>
+												<label for='.$skills_row['SkillID'].'>'.$skills_row['Name'].'</label><br>';
+										
+										//Combobox level
+										$search = $connection->prepare('SELECT * FROM level');
+										$search->execute();
+										$resultLevel = $search->get_result();
+									
+										$lev_name= "level".$skills_row['SkillID'];
+										echo '<select class="profileEdit" name="'.$lev_name.'">';
+										while($level_row = mysqli_fetch_assoc($resultLevel)){
+											echo '<option value='.$level_row["LevelID"].' >'.$level_row["Name"].' </option>';
+										}
+										echo ' </select> </div>';
+									}
+
+									
+							?>
+							
+							
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                 <div class="form-group">
-                                    <input type="submit" class="form-control" id="Add" value="Add" name="addVacancy">
+                                    <input type="submit" class="btn btn-primary" id="Add" value="Publish" name="addVacancy">
                                 </div>
                             </div>
                         </div>
