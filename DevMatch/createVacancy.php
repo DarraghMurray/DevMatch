@@ -6,10 +6,11 @@
         if(isset($_REQUEST['vacTeamID'])) {
             $teamID = $_REQUEST['vacTeamID'];
         } 
-        
+
         if(isset($_REQUEST['addVacancy'])) {
 			echo("add");
-            $role = $_REQUEST['role'];
+            //Create vacancy
+			$role = $_REQUEST['role'];
 			echo($role);
             $description = $_REQUEST['description'];
             echo($description);
@@ -21,20 +22,23 @@
             $addQuery = $connection->prepare('INSERT INTO vacancies(TeamID,ManagerID,Role,Description) VALUES(?,?,?,?)');
             $addQuery->bind_param('iiss',$teamID, $addManID, $role, $description);
             $addQuery->execute();
-        }
-		
-		foreach($_POST['skill'] as $selected){ //checked items
-		array_push($newSkills,$selected);
-		if(!in_array($selected,$existingSkills)){ //insert in db with level
-			$lev= "level".$selected;
-			if(isset($_POST[$lev])){
-
-				$ins = $connection->prepare('INSERT INTO skillrequirement VALUES ( ? , ? , ?)');
-				$ins->bind_param('iii',$vacancy,$selected,$_POST[$lev]);
-				$ins->execute();
-			}	
+			//Get autoincremented vacID from last insertion through addQuery
+			$vacID=$addQuery->insert_id;
+			
+			//Create skill requirements
+			if(!empty($_POST['skill'])){
+				$addReqQuery = $connection->prepare('INSERT INTO skillrequirement(VacID, SkillID, LevelID) VALUES(?,?,?)');
+				$addReqQuery->bind_param('iii',$vacID,$skillID,$lvlID);
+				// Loop to store and display values of individual checked checkbox.
+				foreach($_POST['skill'] as $selected){ //checked items
+					$skillID=$selected;
+					if (isset($_POST["level".$selected])){
+						$lvlID=$_POST["level".$selected];
+					}
+					$addReqQuery->execute();
+				}
+			}
 		}
-	}
 ?>
 
 <html>
@@ -53,7 +57,7 @@
         <div class="container page">
             <div class="card h-100">
                 <div class="card-body">
-                    <form action="" method="post"> 
+                    <form method="post"> 
                         <?php
                             echo('<input type="hidden" name="createVacManID" value='.$user.'>
                             <input type="hidden" name="createVacTeamID" value='.$teamID.'>');
@@ -83,12 +87,13 @@
 								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 									<div class="form-group">
 							<?php 
-									//	
+									//	Get all skills
 									$searchSkills= $connection->prepare('SELECT * FROM skills');
 									$searchSkills->execute();
 									$resultSkills = $searchSkills->get_result();
 									
-									while(	$skills_row = mysqli_fetch_assoc($resultSkills)){
+									// One line per skill (checkbox, skill name and level selection)
+									while($skills_row = mysqli_fetch_assoc($resultSkills)){
 
 										echo '
 											<div class="d-flex justify-content-between" style="margin-top:10px;">
@@ -110,7 +115,6 @@
 
 									
 							?>
-							
 							
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                 <div class="form-group">

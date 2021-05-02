@@ -71,33 +71,9 @@
         }
         else
          $imageURL = "Assets/other.png";
-
-        /* // Skills
-		$connectionSearch = $connection->prepare('SELECT 
-													level.Name AS LvlName, 
-													skills.Name AS SName, 
-													userskill.Qualification AS SQualification,
-													skilltype.Name AS STName 
-													FROM level, userskill, skills, skilltype, profiles 
-													WHERE profiles.UserID = ? 
-													AND userskill.UserID=profiles.UserID 
-													AND userskill.SkillID=skills.SkillID 
-													AND userskill.LevelID=level.LevelID
-													AND skills.STypeID=skilltype.STypeID');
-        $connectionSearch->bind_param('s',$searchTerm);
-        $connectionSearch->execute();
-		$result = $connectionSearch->get_result();
-        $skillList=array();
-		while($row = mysqli_fetch_assoc($result)){
-			array_push($skillList,$row);
-		} */
 		
 		
 	if(isset($_POST['update'])) {
-        //update databese validate and reload the page
-		
-		echo 'post******************************************************';
-
 
 		//update database validate and reload the page
 		if(isset($_POST['descrip'])){
@@ -581,32 +557,6 @@ echo '
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="form-group">';
 	
-	/* foreach($skillList as $userskill){
-    echo'<div class="row gutters">
-		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-			<h6 class="mt-3 mb-2 text-primary">Skills</h6>
-		</div>
-		<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-			<div class="form-group">
-				<label for="SkillName">Skill</label>
-				<input type="text" class="form-control" id="Skill" value="'.$userskill['SName'].'">
-			</div>
-		</div>
-		
-		<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-			<div class="form-group">
-				<label for="level">Level</label>
-				<input type="text" class="form-control" id="level" value="'.$userskill['LvlName'].'">
-			</div>
-		</div>
-
-		<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-			<div class="form-group">
-				<label for="qualification">Qualifications</label>
-				<input type="text" class="form-control" id="qualification" value="'.$userskill['SQualification'].'">
-			</div>
-		</div>';
-	} */
 	//////////////////////////////// skills	  
 		//existing skills
 		$searchUserSkill = $connection->prepare('SELECT * FROM userskill WHERE UserID = ?');

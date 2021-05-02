@@ -1,6 +1,7 @@
 <?php
 		require("navBar.php");
 		require("database.php");
+		
 ?>
 
 <html>
@@ -28,6 +29,7 @@
 					<input type="submit" value="Add Vacancy">
 				</form>');
 			}
+			
 		?>
 	</div>
 		
@@ -36,21 +38,21 @@
 
 <?php
 
-		//retrieves connections already validated
-        $vacancies = $connection->prepare('SELECT VacID,ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0');
-        $vacancies->bind_param('s', $teamID);
-        $vacancies->execute();
+	// Get all enabled vacancies of the team
+	$vacancies = $connection->prepare('SELECT VacID,ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0');
+	$vacancies->bind_param('s', $teamID);
+	$vacancies->execute();
 
-		$vacanciesRes = $vacancies->get_result();
+	$vacanciesRes = $vacancies->get_result();
 
-		if (mysqli_num_rows($vacanciesRes)==0 ) {
-			$vacanciesRes = "";
-		}
-		displaySearchResultVacancy($vacanciesRes);
+	if (mysqli_num_rows($vacanciesRes)==0 ) {
+		$vacanciesRes = "";
+	}
+	displaySearchResultVacancy($vacanciesRes);
 		
 
 		
-	// Display search result for the different search
+	// Display search result
 	// Not ideal, relevant field are hard coded and each search has a different display function.
 	function displaySearchResultVacancy($vacancies) {	 
 
@@ -74,10 +76,10 @@
 			</thead>');
 
 		if($vacancies !== "") {
-
 			while($row = mysqli_fetch_assoc($vacancies)) {
 				include("database.php");
 
+				// Get Name corresponding to ManagerID
 				$searchTerm = $row['ManagerID'];
 
 				$searchUser = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');
@@ -86,6 +88,7 @@
 
 				$resultUser = $searchUser->get_result();
 
+				// Table display + Links to vacancy page
 				while(	$user_row = mysqli_fetch_assoc($resultUser)){
 					echo ('<tr class="clickableRow" data-href="#">
                         <td>'
