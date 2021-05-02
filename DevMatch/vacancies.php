@@ -10,9 +10,7 @@
       <?php
         include("database.php");
 
-                $vacancySearch = $connection->prepare('SELECT vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID');
-                $vacancySearch->execute();
-
+                $vacancySearch = $db->executeStatement('SELECT vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID');
                 $result = $vacancySearch->get_result();
               
 				displaySearchResultVacancies($result);

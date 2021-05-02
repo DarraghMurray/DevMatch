@@ -39,15 +39,15 @@
 <?php
 
 	// Get all enabled vacancies of the team
-	$vacancies = $connection->prepare('SELECT VacID,ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0');
-	$vacancies->bind_param('s', $teamID);
-	$vacancies->execute();
+	$params=array($teamID);
+	$vacanciesQ = $db->executeStatement('SELECT VacID,ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0','i',$params);
 
-	$vacanciesRes = $vacancies->get_result();
 
-	if (mysqli_num_rows($vacanciesRes)==0 ) {
+	$vacanciesRes = $vacanciesQ->get_result();
+
+/* 	if (mysqli_num_rows($vacanciesRes)==0 ) {
 		$vacanciesRes = "";
-	}
+	} */
 	displaySearchResultVacancy($vacanciesRes);
 		
 
@@ -81,10 +81,8 @@
 
 				// Get Name corresponding to ManagerID
 				$searchTerm = $row['ManagerID'];
-
-				$searchUser = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');
-				$searchUser->bind_param('s',$searchTerm);
-				$searchUser->execute();
+				$params=array($searchTerm);
+				$searchUser = $db->executeStatement('SELECT * FROM profiles WHERE UserID = ?','i',$params);
 
 				$resultUser = $searchUser->get_result();
 
