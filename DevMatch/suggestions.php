@@ -18,8 +18,8 @@
 		$userSkillSearchQ=$db->executeStatement('SELECT * FROM userskill, level WHERE userID=? AND userskill.LevelID=level.LevelID','i',$params);
 		$resultUserS=$userSkillSearchQ->get_result();
 		
-		//Get all vacancies
-		$vacancySearchQ = $db->executeStatement('SELECT vacID, vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID');
+		//Get all active vacancies
+		$vacancySearchQ = $db->executeStatement('SELECT vacID, vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID AND Disabled=0');
 		$resultAllVac = $vacancySearchQ->get_result();
 
 		$suggestedVacRows=array();
@@ -86,8 +86,14 @@
 							</td>
 							<td>
 								'.$row['Description'].'
-							</td>
-						</tr>');
+							</td>');
+							/* <td>	//Does not redirect, opens vacancy.php in the current container instead
+								<form action="vacancy.php" method="POST">
+									<input type="hidden" name="teamVacancySelected" value='.$row['vacID']. '>
+									<input type="submit" name="View" value="View">
+								</form>
+							</td> */
+						echo ('</tr>');
 					}
 				echo ('
 				</table>

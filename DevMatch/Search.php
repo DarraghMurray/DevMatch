@@ -140,7 +140,7 @@
                 $searchTerm = '%' . $searchTerm . '%';
                 
 				$params = array($searchTerm);
-				$vacancySearch= $db->executeStatement('SELECT vacancies.VacID,vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID AND Role LIKE ?','s',$params);
+				$vacancySearch= $db->executeStatement('SELECT vacancies.VacID,vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID AND Disabled=0 AND Role LIKE ?','s',$params);
                 $result = $vacancySearch->get_result();
 				displaySearchResultVacancies($result);
             }
