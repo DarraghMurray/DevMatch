@@ -140,7 +140,7 @@
                 $searchTerm = '%' . $searchTerm . '%';
                 
 				$params = array($searchTerm);
-				$vacancySearch= $db->executeStatement('SELECT vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID AND Role LIKE ?','s',$params);
+				$vacancySearch= $db->executeStatement('SELECT vacancies.VacID,vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID AND Role LIKE ?','s',$params);
                 $result = $vacancySearch->get_result();
 				displaySearchResultVacancies($result);
             }
@@ -243,6 +243,12 @@
 						<td>
 							'.$row['Description'].'
 						</td>
+						<td>
+							<form action="teamProfile.php" method="post">
+								<input type="hidden" name="teamProfileSelected" value=' .$row['TeamID'].'>
+								<input type="submit" name="View" value="View" />
+							</form>
+						</td>
 					</tr>');
 				}
 			echo ('
@@ -286,6 +292,12 @@
 							</td>
 							<td>
 								'.$row['Description'].'
+							</td>
+							<td>
+								<form action="vacancy.php" method="post">
+									<input type="hidden" name="teamVacancySelected" value=' .$row['VacID'].'>
+									<input type="submit" name="View" value="View" />
+								</form>
 							</td>
 						</tr>');
 					}
