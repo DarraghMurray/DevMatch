@@ -104,13 +104,13 @@ echo '
             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12">
               <div class="form-group">
                 <label for="fullName">Role</label>
-                <input type="text" class="form-control" name="updateRole" id="updateRole" value="' . $role . '">
+                <input type="text" class="form-control vacancyEdit" name="updateRole" id="updateRole" value="' . $role . '">
               </div>
             </div>
             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12">
               <div class="form-group">
                 <label for="eMail">Description</label>
-                <input type="text" class="form-control" name="updateDescription" id="updateDescription" value="' . $description . '">
+                <input type="text" class="form-control vacancyEdit" name="updateDescription" id="updateDescription" value="' . $description . '">
               </div>
             </div>
         </div>
@@ -225,7 +225,18 @@ function displayVacancySkills($vacancy) {
 <script type="text/javascript">
 	
 </script>
-
+    <script language="javascript">
+        var admin = '<?php echo $admin ?>';
+        var manager = '<?php echo $teamManager ?>';
+		var owner = '<?php echo $teamOwner ?>';
+        
+        if(!admin && !manager && !owner) {
+          $(".vacancyEdit").each(function() {
+            $(this).prop('readonly',true);
+			$(this).prop('disabled',true);
+          });
+        }
+    </script>
 
 </body>
 </html>

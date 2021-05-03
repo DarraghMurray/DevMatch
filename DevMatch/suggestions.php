@@ -86,14 +86,14 @@
 							</td>
 							<td>
 								'.$row['Description'].'
-							</td>');
-							/* <td>	//Does not redirect, opens vacancy.php in the current container instead
-								<form action="vacancy.php" method="POST">
-									<input type="hidden" name="teamVacancySelected" value='.$row['vacID']. '>
-									<input type="submit" name="View" value="View">
+							</td>
+							<td>
+								<form action="vacancy.php" target="_parent" method="post">
+									<input type="hidden" name="teamVacancySelected" value=' .$row['vacID'].'>
+									<input type="submit" name="View" value="View" />
 								</form>
-							</td> */
-						echo ('</tr>');
+							</td>
+						</tr>');
 					}
 				echo ('
 				</table>
