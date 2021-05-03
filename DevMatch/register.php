@@ -52,7 +52,7 @@
               $uTypeID = 1;
               $hashPassword = password_hash($password, PASSWORD_DEFAULT);
 
-              $db->beingTransaction();
+              $db->beginTransaction();
               $params = array($email,$hashPassword,$uTypeID);
               $userTableInsert = $db->executeStatement('INSERT INTO users(Email,Password,UTypeID) 
               VALUES(?,?,?)','ssi',$params);

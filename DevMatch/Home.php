@@ -20,6 +20,7 @@
   <a href="connections.php" target="page">Connections</a>
   <a href="teams.php"  target="page">Teams</a>
   <a href="vacancies.php"  target="page">Vacancies</a>
+  <a href="suggestions.php" target="page">Suggested vacancies</a>
 </div>
 
 <iframe class="page" name="page" src="connections.php"></iframe>

@@ -21,7 +21,7 @@
 		<div class="container">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h2 class="panel-title">All teams</h2>
+					<h2 class="panel-title">All Teams</h2>
 				</div>
 			<table class="table table-bordered table-condensed table-hover">
 			<thead class="thead-dark">
