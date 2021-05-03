@@ -1211,10 +1211,10 @@ function getLevel($skillId,$user){
 <script src="http://netdna.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <script type="text/javascript"></script>
     <script language="javascript">
-        var user_type = '<?php echo $userType ?>';
+        var admin = '<?php echo $admin ?>';
         var own_profile = '<?php echo $ownProfile ?>';
         
-        if(user_type != 2 && own_profile != true) {
+        if(!admin && own_profile != true) {
           $(".profileEdit").each(function() {
             $(this).prop('readonly',true);
 			$(this).prop('disabled',true);

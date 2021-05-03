@@ -7,10 +7,8 @@
 		$admin = $_SESSION['admin'];
         $teamOwner=false;
         $teamManager=false;
-
 		if(isset($_REQUEST['viewMembers'])) {
 			$teamID = $_REQUEST['teamID'];
-			$memberType = intval($_SESSION['memberType']);
 		}
 
 		if(isset($_REQUEST['memberToRemove'])) {
@@ -20,18 +18,19 @@
 
 		checkMember($user,$teamID,$teamManager,$teamOwner);
 
+
 		//retrieves connections already validated
 		$params = array($teamID);
 		$members = $db->executeStatement('SELECT UserID FROM members WHERE TeamID = ?','s',$params);
 		$membersRes = $members->get_result();
 
-		displaySearchResultProfile($membersRes,$teamID, $memberType);;
+		displaySearchResultProfile($membersRes,$teamID, $teamOwner, $teamManager);
 		
 
 		
 	// Display search result for the different search
 	// Not ideal, relevant field are hard coded and each search has a different display function.
-	function displaySearchResultProfile($members, $teamID, $memberType) {	 
+	function displaySearchResultProfile($members, $teamID, $teamOwner, $teamManager) {	 
 		if(!mysqli_num_rows($members)) {
 			echo'<div class="container">
 					No result found.
