@@ -1,7 +1,12 @@
 <?php
 		require("navBar.php");
         require("database.php");
+		require('checkMemberType.php');
 
+		$user = $_SESSION['userID'];
+		$admin = $_SESSION['admin'];
+        $teamOwner=false;
+        $teamManager=false;
 
 		if(isset($_REQUEST['viewMembers'])) {
 			$teamID = $_REQUEST['teamID'];
@@ -12,6 +17,8 @@
 			$params = array($_REQUEST['membersToRemove'],$teamID);
 			$deleteQuery = $db->executeStatement('DELETE FROM members WHERE UserID=? AND TeamID=?','ii',$params);
 		}
+
+		checkMember($user,$teamID,$teamManager,$teamOwner);
 
 		//retrieves connections already validated
 		$params = array($teamID);
@@ -78,7 +85,7 @@
 									<input type="submit" name="View" value="View" />
 								</form>
 							</td>';
-							if($memberType === 2) {
+							if($teamOwner || $teamManager) {
 							echo '<td>
 								<form action="" method="POST">
 									<input type="hidden" name="teamID" value='. $teamID .'>

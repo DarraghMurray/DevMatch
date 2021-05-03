@@ -18,7 +18,7 @@
     <?php
         require("database.php");
     
-        $userType = intval($_SESSION['userType']);
+        $admin = $_SESSION['admin'];
 
         if(isset($_REQUEST['profileSelected'])) {
           $user = $_REQUEST['profileSelected'];
@@ -703,7 +703,7 @@ echo '
 					 <button type="button" id="addTeam" name="addTeam" class="btn btn-primary addTeamBtn">Add a team</button>
 					  <button type="button" id="viewAdministratedTeams" name="viewAdministratedTeams" class="btn btn-primary viewAdministratedTeams" style="margin-top:10px">View Administrated Teams</button>
 					 ';
-					 if($userType === 2) {
+					 if($admin) {
 					   echo('<form method="post">
 						   <input type="hidden" name="userToBan" value='.$user.'>
 						   <input type="submit" name="banUser" value="Ban">
@@ -1107,7 +1107,7 @@ echo '
 	$count++;
   }
 
-    if($ownProfile || $userType === 2) {
+    if($ownProfile || $admin) {
       echo('
 		</div>
 		</div>

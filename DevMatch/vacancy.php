@@ -17,9 +17,12 @@
 
     <?php
         require("database.php");
+        require("checkMemberType.php");
 
         $user = $_SESSION['userID'];
-        $userType = intval($_SESSION['userType']);
+        $admin = $_SESSION['admin'];
+        $teamOwner = false;
+        $teamManager = false;
 
         if(isset($_REQUEST['applied'])) {
           $vacancy = $_REQUEST['appliedVacID'];
@@ -59,6 +62,8 @@
         $teamName = $row['Name'];
         $teamID = $row['TeamID'];
 
+        checkMember($user,$teamID,$teamManager,$teamOwner);
+
 echo '
 <div class="container">
 <div class="row gutters">
@@ -73,13 +78,13 @@ echo '
 				<h5 class="manager-name">' . $managerName .'</h5>
 				<h6 class="team-name">' . $teamName . '</h6>
 			</div>';
-      if($userType === 2) {
+      if($admin || $teamManager || $teamOwner) {
       echo'
       <form action="" method="POST">
         <input type="hidden" name="vacToRemove" value="'. $vacancy .'">
         <input type="submit" name="removeVac" value="Remove">
       </form>';
-      }
+      } 
 		echo'</div>
 	</div>
 </div>
@@ -88,7 +93,7 @@ echo '
 <div class="card h-100">
   <form action="" method="POST">
     <div class="card-body">';
-    if($userType === 2) {
+    if($admin) {
       echo'
       <form action="" method="POST">';
     }
@@ -102,17 +107,26 @@ echo '
                 <input type="text" class="form-control" name="updateRole" id="updateRole" value="' . $role . '">
               </div>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12">
               <div class="form-group">
                 <label for="eMail">Description</label>
                 <input type="text" class="form-control" name="updateDescription" id="updateDescription" value="' . $description . '">
               </div>
             </div>
-        </div>';
-        if($userType === 2) {
-          echo'
+        </div>
         <div class="row gutters">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+          <div class ="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+              <div "text-left">
+                <form action="" method="post">
+                  <input type="hidden" name="appliedUser" value="'.$user.'">
+                  <input type="hidden" name="appliedVacID" value="'.$vacancy.'">
+                  <input type="submit" name="applied" class="btn-primary" value="Apply">
+                </form>
+              </div>
+          </div>';
+        if($admin || $teamOwner || $teamManager) {
+          echo'
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
             <div class="text-right">
               <input type="hidden" name="updateVacancy" value="'.$vacancy.'">
               <input type="submit" id="updateBtn" name="update" class="btn btn-primary" value="Update" />
@@ -127,17 +141,10 @@ echo '
                 <input type="submit" name="viewApplicants" class="btn-primary" value="View Applicants">
               </form>
             </div>
-            <div "text-left">
-              <form action="" method="post">
-                <input type="hidden" name="appliedUser" value="'.$user.'">
-                <input type="hidden" name="appliedVacID" value="'.$vacancy.'">
-                <input type="submit" name="applied" class="btn-primary" value="Apply">
-              </form>
-            </div>
-          </div>
-        </div>';
+          </div>';
         }
         echo'
+        </div>
         <div class="row gutters">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">';
               displayVacancySkills($vacancy);

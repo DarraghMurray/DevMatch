@@ -17,13 +17,19 @@
 
 	<div class="text-right">
 		<?php
+			require("checkMemberType.php");
+			$user = $_SESSION['userID'];
+			$admin = $_SESSION['admin'];
+			$teamOwner=false;
+			$teamManager=false;
 
 			if(isset($_REQUEST['viewVacancies'])) {
 				$teamID = $_REQUEST['teamID'];
-				$memberType = intval($_REQUEST['memberType']);
 			}
 
-			if($memberType === 2 || $memberType === 3) {
+			checkMember($user,$teamID,$teamManager,$teamOwner);
+
+			if($teamOwner || $teamManager) {
 				echo('<form action="createVacancy.php" method="post">
 					<input type="hidden" name="vacTeamID" value='. $teamID.'>
 					<input type="submit" value="Add Vacancy">

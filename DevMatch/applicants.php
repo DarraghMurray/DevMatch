@@ -16,8 +16,12 @@
 
 <?php
     require("database.php");
+    require("checkMemberType.php");
 
-    $userType = intval($_SESSION['userType']);
+    $user= $_SESSION['userID'];
+    $admin = $_SESSION['admin'];
+    $teamOwner = false;
+    $teamManager = false;
 
     if(isset($_REQUEST['acceptApplicant'])) {
       $user = $_REQUEST['applicantAccepted'];
@@ -34,6 +38,8 @@
       $vacancy = $_REQUEST['applicantsVacID'];
       $teamID = $_REQUEST['vacTeamID'];
     }
+
+    checkMember($user,$teamID,$teamManager,$teamOwner);
 
     $params = array($vacancy);
     $applicantsQuery = $db->executeStatement('SELECT profiles.UserID,profiles.FirstName,profiles.LastName,profiles.Gender,profiles.Country,profiles.DateOfBirth 
@@ -62,7 +68,7 @@
 
       $age = $row['DateOfBirth'];
 
-      echo('<tr class="clickableRow" data-href="#">
+      echo '<tr class="clickableRow" data-href="#">
       <td>
         '.$row['FirstName'].' '.$row['LastName'].'
       </td>
@@ -74,20 +80,24 @@
       </td>
       <td>
         '.$row['Country'].'
-      </td>
-      <td>
-        <form action="" method="POST">
-          <input type="hidden" name="teamAccepted" value="'.$teamID.'">
-          <input type="hidden" name="vacAccepted" value="'.$vacancy.'">
-          <input type="hidden" name="applicantAccepted" value="'.$row['UserID'].'">
-          <input type="submit" name="acceptApplicant" value="Accept">
-        </form>
+      </td>';
+      if($admin || $teamOwner || $teamManager) {
+        echo '<td>
+          <form action="" method="POST">
+            <input type="hidden" name="teamAccepted" value="'.$teamID.'">
+            <input type="hidden" name="vacAccepted" value="'.$vacancy.'">
+            <input type="hidden" name="applicantAccepted" value="'.$row['UserID'].'">
+            <input type="submit" name="acceptApplicant" value="Accept">
+          </form>
+        </td>';
+      }
+      echo'<td>
         <form action="profile.php" method="POST">
           <input type="hidden" name="profileSelected" value="'.$row['UserID'].'">
           <input type="submit" name="View" value="View">
         </form>
       </td>
-    </tr>');
+    </tr>';
     }
 
     echo '</table>

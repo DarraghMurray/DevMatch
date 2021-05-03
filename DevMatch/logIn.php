@@ -23,7 +23,11 @@
                                 session_regenerate_id();
                                 $_SESSION['loggedin'] = TRUE;
                                 $_SESSION['userID'] = $userID;
-                                $_SESSION['userType'] = $userType;
+                                if(intval($userType) === 2) {
+                                    $_SESSION['admin'] = true;
+                                } else {
+                                    $_SESSION['admin'] = false;
+                                }
                 
                                 header("location: Home.php");
                             } else {

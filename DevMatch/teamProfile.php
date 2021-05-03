@@ -17,9 +17,12 @@
 
     <?php
         require("database.php");
+        require("checkMemberType.php");
 
         $user = $_SESSION['userID'];
-        $userType = intval($_SESSION['userType']);
+        $admin = $_SESSION['admin'];
+        $teamOwner=false;
+        $teamManager=false;
     
         if(isset($_REQUEST['update'])) {
           $team = $_REQUEST['updateTeam'];
@@ -33,7 +36,9 @@
           $team = $_REQUEST['teamProfileSelected'];
         }
 
-        $params = array($team,$user);
+        checkMember($user,$team,$teamManager,$teamOwner);
+
+        /*$params = array($team,$user);
         $memberTypeQuery = $db->executeStatement('SELECT MTypeID FROM members WHERE TeamID=? AND UserID=?','ii',$params);
 
         $memberTypeResult = $memberTypeQuery->get_result();
@@ -42,9 +47,9 @@
         } else {
           $row = mysqli_fetch_assoc($memberTypeResult);
           $_SESSION['memberType'] = $row['MTypeID'];
-        }
+        }*/
 
-        $memberType = intval($_SESSION['memberType']);
+        //$memberType = intval($_SESSION['memberType']);
         $searchTerm =  $team;
 
         $params=array($searchTerm);
@@ -75,18 +80,17 @@ echo '
 				<h5>About</h5>';
 
    if($description==null)
+
    echo'
         <textarea type="textarea" class="form-control" id="description" placeholder="Description" rows="3"></textarea>';
     else
      echo ' <textarea type="textarea" class="form-control" id="description" value="' . $description .'" rows="3"></textarea>';
      echo '
             <form action="teamMembers.php"target="_parent" method="post">
-              <input type="hidden" name="memberType" value="'.$memberType.'">
               <input type="hidden" name="teamID" value="' .$team.'">
               <input type="submit" name="viewMembers" value="View Members" />
             </form>
             <form action="teamVacancies.php"target="_parent" method="post">
-              <input type="hidden" name="memberType" value="'.$memberType.'">
               <input type="hidden" name="teamID" value="' .$team.'">
               <input type="submit" name="viewVacancies" value="View Vacancies" />
             </form>
@@ -98,7 +102,7 @@ echo '
 <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
 <div class="card h-100">
 	<div class="card-body">';
-  if($userType===2 || $memberType===2) {
+  if($admin || $teamOwner) {
   echo'
     <form action="" method="POST">';
   }
@@ -119,7 +123,7 @@ echo '
           </div>
         </div>
       </div>';
-      if($userType === 2 || $memberType === 2) {
+      if($admin || $teamOwner) {
         echo '
       <div class="row gutters">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
