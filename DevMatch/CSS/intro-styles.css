@@ -5,17 +5,17 @@ body{
 }
 
 .modal-content {
-    border: 1px solid #000;
-    height: 80%;
-    width: 50%; 
-    margin: 5px auto;
-    background-color: lightblue;
-    overflow:hidden;
+	width: 50%;
+	border-radius: 20px;
+	box-shadow: 0 5px 5px rgba(0,0,0,.4);
+	margin: 2em auto;
+	display: flex;
 }
 
 span {
     position:absolute;
-    right: 1%;
+    top: 3%;
+    right: 3%;
 }
 
 .form-group {
@@ -70,12 +70,12 @@ select {
 }
 
 #logoImage {
-    width:10%
+    width:200px;
 }
 
 .container{
     position: relative;
-    top:100px;
+    top:20px;
     padding: 5px;
 	font-family: 'Raleway';
 }
@@ -83,7 +83,7 @@ select {
 .rounded{
 	height: 10%;
 	width: 10%;
-
+	margin: 1em auto;
 }
 
 .resp-container {
@@ -103,8 +103,8 @@ select {
 
 
 .resp-about {
+	overflow: auto;
     position: absolute;
-    overflow: scroll;
     top: 20%;
     left: 55%;
     width: 40%;
@@ -120,16 +120,6 @@ select {
 
 }
 
-#about-logo{
-	    position: relative;
-	    
-	    	       width: 30%;
-    height: 30%;
-
-
-}
-
 #myModal{
 	padding: 10px;
 }
-
