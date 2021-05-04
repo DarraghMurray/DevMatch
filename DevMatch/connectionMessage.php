@@ -57,7 +57,7 @@
                                     <ul class="m-b-0">';
 					while($message_row = mysqli_fetch_assoc($messages)) {
 							echo ('
-                                    <li class="clearfix Message">
+                                    <li class="clearfix userMessage">
                                         <div class="message-data');
                                             if($message_row['SenderID'] == $userToMessage) {
                                                 echo'text-right';
@@ -96,7 +96,6 @@
 <div class="row clearfix">
     <div class="col-lg-12">
         <div class="card">
-            <div class="container overflow-auto">
                 <h1 class="load-more">Load More</h1>
                 <input type="hidden" id="row" value="0">
                 <input type="hidden" id="all" value="<?php echo $allcount; ?>">
@@ -120,7 +119,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>
@@ -132,7 +130,7 @@
 
 // Load more data
 $('.load-more').click(function(){
-    var row = $('.Message').length;
+    var row = $('.userMessage').length;
     var allcount = Number($('#all').val());
     var rowperpage = 10;
     var userToMessage = "<?php echo $userToMessage ?>";
@@ -155,10 +153,10 @@ $('.load-more').click(function(){
                 // Setting little delay while displaying new content
                 setTimeout(function() {
                     // appending messages after last message with class="Message"
-                    $(".Message:last").after(response).show().fadeIn("slow");
+                    $(".userMessage:last").after(response).show().fadeIn("slow");
 
                     //var rowno = row + rowperpage;
-                    row = $('.Message').length + rowperpage;
+                    row = $('.userMessage').length + rowperpage;
                     // checking row value is greater than allcount or not
                     if(row - allcount >= 10){
                         // Change the text and background
@@ -178,7 +176,7 @@ $('.load-more').click(function(){
         setTimeout(function() {
 
             // When row is greater than allcount then remove all class='Message' element after 10 elements
-            $('.Message:nth-child(10)').nextAll('.Message').remove();
+            $('.userMessage:nth-child(10)').nextAll('.userMessage').remove();
 
             // Change the text and background
             $('.load-more').text("Load more");
