@@ -32,10 +32,10 @@
             if(empty($country)) { array_push($errors, "must select a country"); }
 
             if(count($errors) == 0) {
-              if($userAlreadyExists = $connection->prepare('SELECT * FROM users WHERE Email=?')) {
 
-                $userAlreadyExists->bind_param('s', $email);
-                $userAlreadyExists->execute();
+              $params = array($email);
+              $userAlreadyExists = $db->executeStatement('SELECT * FROM users WHERE Email=?','s',$params);
+              if($userAlreadyExists) {
 
                 $userAlreadyExists->store_result();
                     if ($userAlreadyExists->num_rows() > 0) {
@@ -52,22 +52,25 @@
               $uTypeID = 1;
               $hashPassword = password_hash($password, PASSWORD_DEFAULT);
 
-              if($userTableInsert = $connection->prepare('INSERT INTO users(Email,Password,UTypeID) 
-                                                      VALUES(?,?,?)')){
-                $userTableInsert->bind_param('ssi',$email,$hashPassword,$uTypeID);
-                $userTableInsert->execute();
+              $db->beginTransaction();
+              $params = array($email,$hashPassword,$uTypeID);
+              $userTableInsert = $db->executeStatement('INSERT INTO users(Email,Password,UTypeID) 
+              VALUES(?,?,?)','ssi',$params);
+              if($userTableInsert){
 
-                $userID = mysqli_insert_id($connection);
-                
+                $userID = $db->getLastInsertID();
 
-                if($profileTableInsert = $connection->prepare('INSERT INTO profiles(UserID,FirstName,LastName,Gender,DateOfBirth,Country) 
-                                                        VALUES(?,?,?,?,?,?)')) {
-                  $profileTableInsert->bind_param('isssss',$userID,$firstName,$surName,$gender,$dateOfBirth,$country);
-                  $profileTableInsert->execute();
+                $params = array($userID,$firstName,$surName,$gender,$dateOfBirth,$country);
+                $profileTableInsert = $db->executeStatement('INSERT INTO profiles(UserID,FirstName,LastName,Gender,DateOfBirth,Country) 
+                VALUES(?,?,?,?,?,?)',"isssss",$params);
+                if($profileTableInsert) {
+                  $db->commitTransaction();
                 } else {
+                  $db->rollbackTransaction();
                   array_push($errors, "Registration failed");
                 }
               } else {
+                $db->rollbackTransaction();
                 array_push($errors, "Registration failed");
               }
 

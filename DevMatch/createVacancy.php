@@ -11,23 +11,22 @@
 			echo("add");
             //Create vacancy
 			$role = $_REQUEST['role'];
-			echo($role);
+			//echo($role);
             $description = $_REQUEST['description'];
-            echo($description);
+            //echo($description);
 			$addManID = $_REQUEST['createVacManID'];
-            echo($addManID);
+            //echo($addManID);
 			$teamID = $_REQUEST['createVacTeamID'];
-			echo($teamID);
+			//echo($teamID);
 			
-            $addQuery = $connection->prepare('INSERT INTO vacancies(TeamID,ManagerID,Role,Description) VALUES(?,?,?,?)');
-            $addQuery->bind_param('iiss',$teamID, $addManID, $role, $description);
-            $addQuery->execute();
+			$params=array($teamID, $addManID, $role, $description);
+            $addQuery = $db->executeStatement('INSERT INTO vacancies(TeamID,ManagerID,Role,Description) VALUES(?,?,?,?)','iiss',$params);
 			//Get autoincremented vacID from last insertion through addQuery
 			$vacID=$addQuery->insert_id;
 			
 			//Create skill requirements
 			if(!empty($_POST['skill'])){
-				$addReqQuery = $connection->prepare('INSERT INTO skillrequirement(VacID, SkillID, LevelID) VALUES(?,?,?)');
+				$addReqQuery = $db->executeStatement('INSERT INTO skillrequirement(VacID, SkillID, LevelID) VALUES(?,?,?)');
 				$addReqQuery->bind_param('iii',$vacID,$skillID,$lvlID);
 				// Loop to store and display values of individual checked checkbox.
 				foreach($_POST['skill'] as $selected){ //checked items
@@ -88,8 +87,7 @@
 									<div class="form-group">
 							<?php 
 									//	Get all skills
-									$searchSkills= $connection->prepare('SELECT * FROM skills');
-									$searchSkills->execute();
+									$searchSkills= $db->executeStatement('SELECT * FROM skills');
 									$resultSkills = $searchSkills->get_result();
 									
 									// One line per skill (checkbox, skill name and level selection)
@@ -101,8 +99,7 @@
 												<label for='.$skills_row['SkillID'].'>'.$skills_row['Name'].'</label><br>';
 										
 										//Combobox level
-										$search = $connection->prepare('SELECT * FROM level');
-										$search->execute();
+										$search = $db->executeStatement('SELECT * FROM level');
 										$resultLevel = $search->get_result();
 									
 										$lev_name= "level".$skills_row['SkillID'];

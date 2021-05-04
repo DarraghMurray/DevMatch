@@ -6,22 +6,18 @@
         if(isset($_REQUEST['accepted'])) {
 			echo($_REQUEST['accepted']);
 			echo($user);
-            $connectionsQuery = $connection->prepare('UPDATE connections SET Validated=1 WHERE User1ID=? AND User2ID=?');
-            $connectionsQuery->bind_param('ii', $_REQUEST['accepted'], $user);
-            $connectionsQuery->execute();
+            $params = array($_REQUEST['accepted'],$user);
+			$connectionsQuery = $db->executeStatement('UPDATE connections SET Validated=1 WHERE User1ID=? AND User2ID=?','ii',$params);
         }
 
 		//retrieves connection requests to user
-        $connectionRequests = $connection->prepare('SELECT User1ID,User2ID FROM connections WHERE User1ID = ? AND Validated = "0"');
-        $connectionRequests->bind_param('s', $user);
-        $connectionRequests->execute();
+        $params = array($user);
+		$connectionRequests = $db->executeStatement('SELECT User1ID,User2ID FROM connections WHERE User1ID = ? AND Validated = 0','s',$params);
 
 		$connectionRequestsRes = $connectionRequests->get_result();
 
 		//retrieves connection requests from user
-        $connectionInvitations = $connection->prepare('SELECT User1ID,User2ID FROM connections WHERE User2ID = ? AND Validated = "0"');
-        $connectionInvitations->bind_param('s', $user);
-        $connectionInvitations->execute();
+        $connectionInvitations = $db->executeStatement('SELECT User1ID,User2ID FROM connections WHERE User2ID = ? AND Validated = 0','s',$params);
 
 		$connectionInvitationsRes = $connectionInvitations->get_result();
 
@@ -62,9 +58,8 @@
 
 				$searchTerm = $row['User1ID'];
 
-				$searchUser = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');
-				$searchUser->bind_param('s',$searchTerm);
-				$searchUser->execute();
+				$params = array($searchTerm);
+				$searchUser = $db->executeStatement('SELECT * FROM profiles WHERE UserID = ?','s',$params);
 
 				$resultUser = $searchUser->get_result();
 
@@ -129,9 +124,8 @@
 
 				$searchTerm = $row['User2ID'];
 
-				$searchUser = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');
-				$searchUser->bind_param('s',$searchTerm);
-				$searchUser->execute();
+				$params = array($searchTerm);
+				$searchUser = $db->executeStatement('SELECT * FROM profiles WHERE UserID = ?','s',$params);
 
 				$resultUser = $searchUser->get_result();
 

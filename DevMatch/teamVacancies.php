@@ -17,13 +17,19 @@
 
 	<div class="text-right">
 		<?php
+			require("checkMemberType.php");
+			$user = $_SESSION['userID'];
+			$admin = $_SESSION['admin'];
+			$teamOwner=false;
+			$teamManager=false;
 
 			if(isset($_REQUEST['viewVacancies'])) {
 				$teamID = $_REQUEST['teamID'];
-				$memberType = intval($_REQUEST['memberType']);
 			}
 
-			if($memberType === 2 || $memberType === 3) {
+			checkMember($user,$teamID,$teamManager,$teamOwner);
+
+			if($teamOwner || $teamManager) {
 				echo('<form action="createVacancy.php" method="post">
 					<input type="hidden" name="vacTeamID" value='. $teamID.'>
 					<input type="submit" value="Add Vacancy">
@@ -39,15 +45,15 @@
 <?php
 
 	// Get all enabled vacancies of the team
-	$vacancies = $connection->prepare('SELECT VacID,ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0');
-	$vacancies->bind_param('s', $teamID);
-	$vacancies->execute();
+	$params=array($teamID);
+	$vacanciesQ = $db->executeStatement('SELECT VacID,ManagerID,Role,Description FROM vacancies WHERE TeamID = ? AND Disabled = 0','i',$params);
 
-	$vacanciesRes = $vacancies->get_result();
 
-	if (mysqli_num_rows($vacanciesRes)==0 ) {
+	$vacanciesRes = $vacanciesQ->get_result();
+
+/* 	if (mysqli_num_rows($vacanciesRes)==0 ) {
 		$vacanciesRes = "";
-	}
+	} */
 	displaySearchResultVacancy($vacanciesRes);
 		
 
@@ -81,10 +87,8 @@
 
 				// Get Name corresponding to ManagerID
 				$searchTerm = $row['ManagerID'];
-
-				$searchUser = $connection->prepare('SELECT * FROM profiles WHERE UserID = ?');
-				$searchUser->bind_param('s',$searchTerm);
-				$searchUser->execute();
+				$params=array($searchTerm);
+				$searchUser = $db->executeStatement('SELECT * FROM profiles WHERE UserID = ?','i',$params);
 
 				$resultUser = $searchUser->get_result();
 

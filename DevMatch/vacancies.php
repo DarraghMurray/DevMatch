@@ -10,9 +10,7 @@
       <?php
         include("database.php");
 
-                $vacancySearch = $connection->prepare('SELECT vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID');
-                $vacancySearch->execute();
-
+                $vacancySearch = $db->executeStatement('SELECT vacID, vacancies.Role, teams.Name, vacancies.Description FROM vacancies, teams WHERE teams.TeamID=vacancies.TeamID AND Disabled=0');
                 $result = $vacancySearch->get_result();
               
 				displaySearchResultVacancies($result);
@@ -30,7 +28,7 @@
 				<div class="container">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<h2 class="panel-title">Results</h2>
+							<h2 class="panel-title">All Vacancies</h2>
 						</div>
 					<table class="table table-bordered table-condensed table-hover">
 					<thead class="thead-dark">
@@ -57,6 +55,12 @@
 							</td>
 							<td>
 								'.$row['Description'].'
+							</td>
+							<td>
+								<form action="vacancy.php" target="_parent" method="post">
+									<input type="hidden" name="teamVacancySelected" value=' .$row['vacID'].'>
+									<input type="submit" name="View" value="View" />
+								</form>
 							</td>
 						</tr>');
 					}

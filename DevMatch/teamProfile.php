@@ -17,63 +17,51 @@
 
     <?php
         require("database.php");
+        require("checkMemberType.php");
 
         $user = $_SESSION['userID'];
-        $userType = intval($_SESSION['userType']);
+        $admin = $_SESSION['admin'];
+        $teamOwner=false;
+        $teamManager=false;
     
         if(isset($_REQUEST['update'])) {
           $team = $_REQUEST['updateTeam'];
           $updateTeamName = $_REQUEST['updateTeamName'];
           $updateTeamDescription = $_REQUEST['updateTeamDescription'];
 
-          $updateQuery = $connection->prepare('UPDATE teams SET Name=?, Description=? WHERE TeamID=?');
-          $updateQuery->bind_param('ssi',$updateTeamName,$updateTeamDescription,$team);
-          $updateQuery->execute();
+          $params = array($updateTeamName,$updateTeamDescription,$team);
+          $updateQuery = $db->executeStatement('UPDATE teams SET Name=?, Description=? WHERE TeamID=?','ssi',$params);
         }
         else if(isset($_REQUEST['teamProfileSelected'])) {
           $team = $_REQUEST['teamProfileSelected'];
         }
 
-        $memTypeQuery = $connection->prepare('SELECT MTypeID FROM members WHERE TeamID=? AND UserID=?');
-        $memTypeQuery->bind_param('ii',$team, $user);
-        $memTypeQuery->execute();
+        checkMember($user,$team,$teamManager,$teamOwner);
 
-        $memTypeResult = $memTypeQuery->get_result();
-        if(!mysqli_num_rows($memTypeResult)) {
-          $memberType = 0;
+        /*$params = array($team,$user);
+        $memberTypeQuery = $db->executeStatement('SELECT MTypeID FROM members WHERE TeamID=? AND UserID=?','ii',$params);
+
+        $memberTypeResult = $memberTypeQuery->get_result();
+        if(!mysqli_num_rows($memberTypeResult)) {
+          $_SESSION['memberType'] = 0;
         } else {
-          $memTypeResult = mysqli_fetch_assoc($memTypeResult);
-          $memberType = intval($memTypeResult['MTypeID']);
-        }
-  
+          $row = mysqli_fetch_assoc($memberTypeResult);
+          $_SESSION['memberType'] = $row['MTypeID'];
+        }*/
+
+        //$memberType = intval($_SESSION['memberType']);
         $searchTerm =  $team;
 
-        //mail and password
-        $teamSearch = $connection->prepare('SELECT Name, Description, CreatorID FROM teams WHERE TeamID = ?');
-        $teamSearch->bind_param('s',$searchTerm);
-        $teamSearch->execute();
-        $result = $teamSearch->get_result();
-        $row = mysqli_fetch_assoc($result);
+        $params=array($searchTerm);
+        $teamProfileQuery = $db->executeStatement('SELECT teams.Name,teams.Description,profiles.FirstName,profiles.LastName 
+        FROM teams INNER JOIN profiles ON teams.CreatorID=profiles.UserID 
+        WHERE teams.TeamID=? ','i',$params);
+        $teamProfileResult = $teamProfileQuery->get_result();
+        $row = mysqli_fetch_assoc($teamProfileResult);
         
         $name = $row['Name'];
         $description = $row['Description'];
-        $creatorID = $row['CreatorID'];
-
-        $creatorSearch = $connection->prepare('SELECT FirstName, LastName FROM profiles WHERE UserID = ?');
-        $creatorSearch->bind_param('s', $creatorID);
-        $creatorSearch->execute();
-        $result = $creatorSearch->get_result();
-        $row = mysqli_fetch_assoc($result);
-
         $creatorName = $row['FirstName'] . " " . $row['LastName'];
-      
-      if(isset($_POST['update'])) {
-        //update databese validate and reload the page
-      }
-      if(isset($_POST['cancel'])) {
-         // it will refresh the page automatically
-      }
-
 echo '
 <div class="container">
 <div class="row gutters">
@@ -92,18 +80,17 @@ echo '
 				<h5>About</h5>';
 
    if($description==null)
+
    echo'
         <textarea type="textarea" class="form-control" id="description" placeholder="Description" rows="3"></textarea>';
     else
      echo ' <textarea type="textarea" class="form-control" id="description" value="' . $description .'" rows="3"></textarea>';
      echo '
             <form action="teamMembers.php"target="_parent" method="post">
-              <input type="hidden" name="memberType" value="'.$memberType.'">
               <input type="hidden" name="teamID" value="' .$team.'">
               <input type="submit" name="viewMembers" value="View Members" />
             </form>
             <form action="teamVacancies.php"target="_parent" method="post">
-              <input type="hidden" name="memberType" value="'.$memberType.'">
               <input type="hidden" name="teamID" value="' .$team.'">
               <input type="submit" name="viewVacancies" value="View Vacancies" />
             </form>
@@ -115,7 +102,7 @@ echo '
 <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
 <div class="card h-100">
 	<div class="card-body">';
-  if($userType===2 || $memberType===2) {
+  if($admin || $teamOwner) {
   echo'
     <form action="" method="POST">';
   }
@@ -136,7 +123,7 @@ echo '
           </div>
         </div>
       </div>';
-      if($userType === 2 || $memberType === 2) {
+      if($admin || $teamOwner) {
         echo '
       <div class="row gutters">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">

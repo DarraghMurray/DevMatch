@@ -16,32 +16,38 @@
 
 <?php
     require("database.php");
+    require("checkMemberType.php");
 
-    $userType = intval($_SESSION['userType']);
+    $user= $_SESSION['userID'];
+    $admin = $_SESSION['admin'];
+    $teamOwner = false;
+    $teamManager = false;
 
     if(isset($_REQUEST['acceptApplicant'])) {
       $user = $_REQUEST['applicantAccepted'];
       $vacancy = $_REQUEST['vacAccepted'];
       $teamID = $_REQUEST['teamAccepted'];
 
-      $deleteVacancy = $connection->prepare('DELETE FROM vacancies WHERE VacID=?');
-      $deleteVacancy->bind_param('i',$vacancy);
-      $deleteVacancy->execute();
+      $params = array($vacancy);
+      $deleteVacancy = $db->executeStatement('DELETE FROM vacancies WHERE VacID=?','i',$params);
 
-      $addTeamMember = $connection->prepare('INSERT INTO members VALUES(?,?,1)');
-      $addTeamMember->bind_param('ii',$teamID,$user);
-      $addTeamMember->execute();
+      $params = array($teamID,$user);
+      $addTeamMember = $db->executeStatement('INSERT INTO members VALUES(?,?,1)','ii',$params);
     }
     else if(isset($_REQUEST['viewApplicants'])) {
       $vacancy = $_REQUEST['applicantsVacID'];
       $teamID = $_REQUEST['vacTeamID'];
     }
 
-    $applicantsQuery = $connection->prepare('SELECT profiles.UserID,profiles.FirstName,profiles.LastName,profiles.Gender,profiles.Country,profiles.DateOfBirth FROM applications INNER JOIN profiles ON applications.UserID=profiles.UserID WHERE VacID=?');
-    $applicantsQuery->bind_param('i', $vacancy);
-    $applicantsQuery->execute();
+    checkMember($user,$teamID,$teamManager,$teamOwner);
 
+    $params = array($vacancy);
+    $applicantsQuery = $db->executeStatement('SELECT profiles.UserID,profiles.FirstName,profiles.LastName,profiles.Gender,profiles.Country,profiles.DateOfBirth 
+                                              FROM applications INNER JOIN profiles ON applications.UserID=profiles.UserID 
+                                              WHERE VacID=?','i',$params);
     $result = $applicantsQuery->get_result();
+
+
 
     echo' <div class="container">
     <div class="panel panel-default">
@@ -62,7 +68,7 @@
 
       $age = $row['DateOfBirth'];
 
-      echo('<tr class="clickableRow" data-href="#">
+      echo '<tr class="clickableRow" data-href="#">
       <td>
         '.$row['FirstName'].' '.$row['LastName'].'
       </td>
@@ -74,20 +80,24 @@
       </td>
       <td>
         '.$row['Country'].'
-      </td>
-      <td>
-        <form action="" method="POST">
-          <input type="hidden" name="teamAccepted" value="'.$teamID.'">
-          <input type="hidden" name="vacAccepted" value="'.$vacancy.'">
-          <input type="hidden" name="applicantAccepted" value="'.$row['UserID'].'">
-          <input type="submit" name="acceptApplicant" value="Accept">
-        </form>
+      </td>';
+      if($admin || $teamOwner || $teamManager) {
+        echo '<td>
+          <form action="" method="POST">
+            <input type="hidden" name="teamAccepted" value="'.$teamID.'">
+            <input type="hidden" name="vacAccepted" value="'.$vacancy.'">
+            <input type="hidden" name="applicantAccepted" value="'.$row['UserID'].'">
+            <input type="submit" name="acceptApplicant" value="Accept">
+          </form>
+        </td>';
+      }
+      echo'<td>
         <form action="profile.php" method="POST">
           <input type="hidden" name="profileSelected" value="'.$row['UserID'].'">
           <input type="submit" name="View" value="View">
         </form>
       </td>
-    </tr>');
+    </tr>';
     }
 
     echo '</table>

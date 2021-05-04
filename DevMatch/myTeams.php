@@ -3,11 +3,9 @@
         include("database.php");
       
         $user= $_SESSION['userID'];
-                $searchTerm = $user;
-                $teamSearch = $connection->prepare('SELECT * FROM members WHERE UserID = ? ');
-                $teamSearch->bind_param('s',$searchTerm);
 
-                $teamSearch->execute();
+                $params = array($user);
+				$teamSearch = $db->executeStatement('SELECT * FROM members WHERE UserID = ? ','s',$params);
 
                 $result = $teamSearch->get_result(); 
                 if (mysqli_num_rows($result)==0) 
@@ -15,9 +13,6 @@
                 else
 				displaySearchResultTeam($result,$user);
           
-        
-		
-	
 	function displaySearchResultTeam($mysqlResult, $user){	 
 		echo ('
 		<div class="container">
@@ -39,20 +34,18 @@
                 include("database.php");
 
                 $searchTerm =  $row['TeamID'] ;
-                $teamSearch = $connection->prepare('SELECT Name FROM teams WHERE TeamID = ? ');
-                $teamSearch->bind_param('s',$searchTerm);
 
-                $teamSearch->execute();
+                $params = array($searchTerm);
+				$teamSearch = $db->executeStatement('SELECT Name FROM teams WHERE TeamID = ? ','s',$params);
 
                 $result = $teamSearch->get_result(); 
 
                 $team_row = mysqli_fetch_assoc($result);
 
                 $searchTerm =  $row['MTypeID'] ;
-                $teamSearch = $connection->prepare('SELECT Name FROM membertype WHERE MTypeID = ? ');
-                $teamSearch->bind_param('s',$searchTerm);
-
-                $teamSearch->execute();
+				
+               	$params = array($searchTerm);
+				$teamSearch = $db->executeStatement('SELECT Name FROM membertype WHERE MTypeID = ? ','s',$params);
 
                 $result = $teamSearch->get_result(); 
 

@@ -10,12 +10,10 @@
       <?php
         include("database.php");
 
-                $connectionSearch = $connection->prepare('SELECT profiles.* FROM profiles INNER JOIN users ON profiles.UserID=users.UserID WHERE Banned=0');
-                $connectionSearch->execute();
-
-                $result = $connectionSearch->get_result();
-           
-				displaySearchResultProfile($result);
+			$connectionSearch = $db->executeStatement('SELECT profiles.* FROM profiles INNER JOIN users ON profiles.UserID=users.UserID WHERE Banned=0');
+			$result = $connectionSearch->get_result();
+	
+			displaySearchResultProfile($result);
     
 
 		
@@ -31,11 +29,6 @@
 			<table class="table table-bordered table-condensed table-hover">
 			<thead class="thead-dark">
 				<tr>');
-			/*while($finfo=$mysqlResult->fetch_field()){ //We don't want every field
-				echo ('
-					<th>'.$finfo->name.'</th>
-				');
-			}*/
 				echo('
 					<th>Name</th>
 					<th>Gender</th>
