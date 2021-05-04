@@ -9,7 +9,7 @@
         }
 		//retrieves connections already validated
         $params = array($user,$user);
-		$connections = $db->executeStatement('SELECT User1ID,User2ID FROM connections WHERE (User1ID = ? OR User2ID = ?) AND Validated = 1','ss',$params);
+		$connections = $db->executeStatement('SELECT User1ID,User2ID FROM connections WHERE (User1ID = ? OR User2ID = ?) AND Validated = 1','ii',$params);
 
 		$connectionsRes = $connections->get_result();
 
@@ -49,10 +49,10 @@
 			while($row = mysqli_fetch_assoc($validatedConnections)) {
 				include("database.php");
 
-				if($row['User1ID'] != $user) {
-					$searchTerm = $row['User1ID'];
-				} else {
+				if(intval($row['User1ID']) == $user) {
 					$searchTerm = $row['User2ID'];
+				} else if(intval($row['User2ID']) == $user) {
+					$searchTerm = $row['User1ID'];
 				}
 
 				$params = array($searchTerm);
@@ -85,7 +85,6 @@
 								<input type="hidden" name="connectionDeleted" value=' .$user_row['UserID']. '>
 								<input type="submit" name="Delete" value="Delete" />
 							</form>
-						}
 						</td>
 					</tr>' );
 				}
