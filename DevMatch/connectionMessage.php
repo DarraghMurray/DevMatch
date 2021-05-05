@@ -27,8 +27,8 @@
         $allcount = $allcount_fetch['allcount'];
         $messageNum = $allcount + 1;
 
-		$params = array($user1ID,$user2ID,$rowperpage);
-		$messages= $db->executeStatement('SELECT * FROM messages WHERE User1ID=? AND User2ID=? ORDER BY MessageNum DESC LIMIT 0,?','iii',$params);
+		$params = array($user1ID,$user2ID, $allcount-$rowperpage ,$rowperpage);
+		$messages= $db->executeStatement('SELECT * FROM messages WHERE User1ID=? AND User2ID=? ORDER BY MessageNum ASC LIMIT ?,?','iiii',$params);
 		$messagesRes = $messages->get_result();
 
 		function displayMessages($messages, $userToMessage, &$messageNum) {
@@ -130,14 +130,14 @@
 
 // Load more data
 $('.load-more').click(function(){
-    var row = $('.userMessage').length;
     var allcount = Number($('#all').val());
+    var row = allcount - Number($('.userMessage').length);
     var rowperpage = 10;
     var userToMessage = "<?php echo $userToMessage ?>";
     var User1ID = "<?php echo $user1ID?>";
     var User2ID = "<?php echo $user2ID?>";
     console.log(row);
-    if(row < allcount){
+    if(row > 0){
         $.ajax({
             url: 'getData.php',
             type: 'post',
@@ -153,12 +153,12 @@ $('.load-more').click(function(){
                 // Setting little delay while displaying new content
                 setTimeout(function() {
                     // appending messages after last message with class="Message"
-                    $(".userMessage:last").after(response).show().fadeIn("slow");
+                    $(".userMessage:first").before(response).show().fadeIn("slow");
 
-                    //var rowno = row + rowperpage;
-                    row = $('.userMessage').length + rowperpage;
+                    row = row - rowperpage;
+                    console.log(row);
                     // checking row value is greater than allcount or not
-                    if(row - allcount >= 10){
+                    if(row <= 0){
                         // Change the text and background
                         $('.load-more').text("Hide");
                         $('.load-more').css("background","darkorchid");
@@ -176,7 +176,7 @@ $('.load-more').click(function(){
         setTimeout(function() {
 
             // When row is greater than allcount then remove all class='Message' element after 10 elements
-            $('.userMessage:nth-child(10)').nextAll('.userMessage').remove();
+            $('.userMessage:nth-last-child(10)').prevAll('.userMessage').remove();
 
             // Change the text and background
             $('.load-more').text("Load more");
