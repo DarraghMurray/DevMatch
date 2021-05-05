@@ -96,6 +96,7 @@
 <div class="row clearfix">
     <div class="col-lg-12">
         <div class="card">
+                <button class="btn-primary" onClick="window.location.reload();">Reload</button>
                 <h1 class="load-more">Load More</h1>
                 <input type="hidden" id="row" value="0">
                 <input type="hidden" id="all" value="<?php echo $allcount; ?>">
@@ -127,7 +128,6 @@
         <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
             <script>
                 $(document).ready(function(){
-
 // Load more data
 $('.load-more').click(function(){
     var allcount = Number($('#all').val());
